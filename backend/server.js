@@ -9,20 +9,21 @@ const departmentRoutes = require("./routes/departmentRoutes");
 const skillRoutes = require("./routes/skillRoutes");
 const employeeRoutes = require("./routes/employeeRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
-
+const leaveRoutes = require("./routes/leaveRoutes");
 const authMiddleware = require("./middleware/authMiddleware");
-
+const leaveTypeRoutes = require("./routes/leaveTypeRoutes");
 const app = express();
 
 app.use(cors());
 app.use(express.json());
-
+app.use("/api/leave-types", leaveTypeRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/departments", departmentRoutes);
 app.use("/api/skills", skillRoutes);
 app.use("/api/employees", employeeRoutes);
 app.use("/api/dashboard-stats", dashboardRoutes);
-
+app.use("/api/leaves", leaveRoutes);
+app.use("/api/leave-types", leaveTypeRoutes);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.get("/api/dashboard", authMiddleware, (req, res) => {

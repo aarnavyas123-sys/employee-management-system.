@@ -8,7 +8,8 @@ function AddEmployee() {
   const [departments, setDepartments] = useState([]);
 
   const [form, setForm] = useState({
-    name: "",
+    firstName: "",
+    lastName: "",
     department_id: "",
     phone: "",
     address: "",
@@ -40,12 +41,22 @@ function AddEmployee() {
     e.preventDefault();
 
     try {
-      await API.post("/employees", form);
+      const employeeData = {
+        name: `${form.firstName} ${form.lastName}`,
+        department_id: form.department_id,
+        phone: form.phone,
+        address: form.address,
+        designation: form.designation,
+        salary: form.salary,
+      };
+
+      await API.post("/employees", employeeData);
 
       toast.success("Employee Added Successfully ✅");
 
       setForm({
-        name: "",
+        firstName: "",
+        lastName: "",
         department_id: "",
         phone: "",
         address: "",
@@ -65,70 +76,114 @@ function AddEmployee() {
       <div className="main-content">
         <Topbar />
 
-        <div className="card p-4 shadow-sm">
-          <h2 className="mb-4">Add Employee</h2>
+        <div className="employee-form-card">
+          <div className="employee-form-header">
+            <h2>Register New Employee</h2>
+            <p>Add employee information, assign department and designation.</p>
+          </div>
 
-          <form onSubmit={handleSubmit}>
-            <input
-              className="form-control mb-3"
-              name="name"
-              placeholder="Employee Name"
-              value={form.name}
-              onChange={handleChange}
-              required
-            />
+          <form onSubmit={handleSubmit} className="employee-form">
+            <div className="row">
+              <div className="col-md-6 mb-4">
+                <label>First Name</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="firstName"
+                  value={form.firstName}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
 
-            <select
-              className="form-control mb-3"
-              name="department_id"
-              value={form.department_id}
-              onChange={handleChange}
-              required
-            >
-              <option value="">Select Department</option>
+              <div className="col-md-6 mb-4">
+                <label>Last Name</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="lastName"
+                  value={form.lastName}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+            </div>
 
-              {departments.map((dept) => (
-                <option key={dept.id} value={dept.id}>
-                  {dept.department_name}
-                </option>
-              ))}
-            </select>
+            <div className="row">
+              <div className="col-md-6 mb-4">
+                <label>Phone Number</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="phone"
+                  value={form.phone}
+                  onChange={handleChange}
+                />
+              </div>
 
-            <input
-              className="form-control mb-3"
-              name="phone"
-              placeholder="Phone Number"
-              value={form.phone}
-              onChange={handleChange}
-            />
+              <div className="col-md-6 mb-4">
+                <label>Salary</label>
+                <input
+                  type="number"
+                  className="form-control"
+                  name="salary"
+                  value={form.salary}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
 
-            <input
-              className="form-control mb-3"
-              name="address"
-              placeholder="Address"
-              value={form.address}
-              onChange={handleChange}
-            />
+            <div className="row">
+              <div className="col-md-4 mb-4">
+                <label>Department</label>
 
-            <input
-              className="form-control mb-3"
-              name="designation"
-              placeholder="Designation"
-              value={form.designation}
-              onChange={handleChange}
-            />
+                <select
+                  className="form-select"
+                  name="department_id"
+                  value={form.department_id}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Select Department</option>
 
-            <input
-              className="form-control mb-4"
-              name="salary"
-              placeholder="Salary"
-              value={form.salary}
-              onChange={handleChange}
-            />
+                  {departments.map((dept) => (
+                    <option key={dept.id} value={dept.id}>
+                      {dept.department_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-            <button type="submit" className="btn btn-success">
-              Save Employee
-            </button>
+              <div className="col-md-8 mb-4">
+                <label>Designation</label>
+
+                <input
+                  type="text"
+                  className="form-control"
+                  name="designation"
+                  value={form.designation}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+
+            <div className="mb-4">
+              <label>Residential Address</label>
+
+              <textarea
+                rows="4"
+                className="form-control"
+                name="address"
+                value={form.address}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className="text-end">
+              <button type="submit" className="employee-save-btn">
+                Save Employee
+              </button>
+            </div>
           </form>
         </div>
       </div>

@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 function Departments() {
   const [departmentName, setDepartmentName] = useState("");
   const [departments, setDepartments] = useState([]);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     fetchDepartments();
@@ -17,7 +18,6 @@ function Departments() {
       const res = await API.get("/departments");
       setDepartments(res.data);
     } catch (error) {
-      console.log(error);
       toast.error("Failed to Fetch Departments");
     }
   };
@@ -33,9 +33,8 @@ function Departments() {
       toast.success("Department Added Successfully ✅");
 
       setDepartmentName("");
-
       fetchDepartments();
-    } catch (error) {
+    } catch {
       toast.error("Failed to Add Department ❌");
     }
   };
@@ -49,80 +48,130 @@ function Departments() {
       toast.success("Department Deleted Successfully ✅");
 
       fetchDepartments();
-    } catch (error) {
-      console.log(error);
-
+    } catch {
       toast.error("Cannot delete department. Employees may still be assigned.");
     }
   };
 
+  const filteredDepartments = departments.filter((dept) =>
+    dept.department_name?.toLowerCase().includes(search.toLowerCase()),
+  );
+
   return (
     <>
+      {" "}
       <Sidebar />
-
       <div className="main-content">
         <Topbar />
 
-        <div className="card p-4 shadow-sm">
-          <div className="d-flex justify-content-between align-items-center mb-4">
-            <h3>Department Management</h3>
+        {/* Header */}
+        <div className="card p-4 shadow-sm mb-4">
+          <h2 className="fw-bold">Department Management</h2>
 
-            <span className="badge bg-primary fs-6">
-              Total Departments: {departments.length}
-            </span>
+          <p className="text-muted mb-0">
+            Create and manage company departments.
+          </p>
+        </div>
+
+        {/* Stats Cards */}
+        <div className="row mb-4">
+          <div className="col-md-6">
+            <div className="card p-3 shadow-sm text-center">
+              <h6>Total Departments</h6>
+              <h2>{departments.length}</h2>
+            </div>
           </div>
 
+          <div className="col-md-6">
+            <div className="card p-3 shadow-sm text-center">
+              <h6>Search Results</h6>
+              <h2>{filteredDepartments.length}</h2>
+            </div>
+          </div>
+        </div>
+
+        {/* Add Department */}
+        <div className="card p-4 shadow-sm mb-4">
+          <h4 className="mb-3">Add New Department</h4>
+
           <form onSubmit={handleAddDepartment}>
-            <input
-              className="form-control mb-3"
-              placeholder="Enter Department Name"
-              value={departmentName}
-              onChange={(e) => setDepartmentName(e.target.value)}
-              required
-            />
+            <div className="row">
+              <div className="col-md-9">
+                <input
+                  className="form-control"
+                  placeholder="Enter Department Name"
+                  value={departmentName}
+                  onChange={(e) => setDepartmentName(e.target.value)}
+                  required
+                />
+              </div>
 
-            <button type="submit" className="btn btn-success mb-4">
-              Add Department
-            </button>
+              <div className="col-md-3">
+                <button type="submit" className="btn btn-success w-100">
+                  + Add Department
+                </button>
+              </div>
+            </div>
           </form>
+        </div>
 
-          <h4 className="mb-3">Department List</h4>
+        {/* Department List */}
+        <div className="card p-4 shadow-sm">
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <h4 className="mb-0">Department Directory</h4>
 
-          <table className="table table-bordered table-hover">
-            <thead className="table-light">
-              <tr>
-                <th>ID</th>
-                <th>Department Name</th>
-                <th>Action</th>
-              </tr>
-            </thead>
+            <input
+              type="text"
+              className="form-control"
+              style={{ width: "280px" }}
+              placeholder="🔍 Search Department"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
 
-            <tbody>
-              {departments.length > 0 ? (
-                departments.map((dept) => (
-                  <tr key={dept.id}>
-                    <td>{dept.id}</td>
-                    <td>{dept.department_name}</td>
+          <div className="table-responsive">
+            <table className="table table-hover align-middle">
+              <thead className="table-light">
+                <tr>
+                  <th>ID</th>
+                  <th>Department</th>
+                  <th width="150">Action</th>
+                </tr>
+              </thead>
 
-                    <td>
-                      <button
-                        className="btn btn-danger btn-sm"
-                        onClick={() => handleDelete(dept.id)}
-                      >
-                        Delete
-                      </button>
+              <tbody>
+                {filteredDepartments.length > 0 ? (
+                  filteredDepartments.map((dept) => (
+                    <tr key={dept.id}>
+                      <td>#{dept.id}</td>
+
+                      <td>
+                        <span className="badge bg-primary fs-6">
+                          {dept.department_name}
+                        </span>
+                      </td>
+
+                      <td>
+                        <button
+                          className="btn btn-danger btn-sm"
+                          onClick={() => handleDelete(dept.id)}
+                        >
+                          🗑 Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="3" className="text-center">
+                      No Departments Found
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="3" className="text-center">
-                    No Departments Found
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </>

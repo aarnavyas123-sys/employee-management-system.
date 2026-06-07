@@ -23,7 +23,42 @@ const createEmployee = async (req, res) => {
     });
   }
 };
+// Update Employee
+const updateEmployee = async (req, res) => {
+  try {
+    const { id } = req.params;
 
+    const { name, department_id, phone, address, designation, salary } =
+      req.body;
+
+    const result = await pool.query(
+      `
+      UPDATE employee_profiles
+      SET
+        name=$1,
+        department_id=$2,
+        phone=$3,
+        address=$4,
+        designation=$5,
+        salary=$6
+      WHERE id=$7
+      RETURNING *
+      `,
+      [name, department_id, phone, address, designation, salary, id],
+    );
+
+    res.json({
+      message: "Employee Updated Successfully",
+      employee: result.rows[0],
+    });
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
 // Get All Employees
 const getEmployees = async (req, res) => {
   try {
@@ -57,7 +92,20 @@ const getEmployeeById = async (req, res) => {
     const { id } = req.params;
 
     const result = await pool.query(
-      "SELECT * FROM employee_profiles WHERE id=$1",
+      `
+      SELECT
+        ep.id,
+        ep.name,
+        ep.phone,
+        ep.address,
+        ep.designation,
+        ep.salary,
+        d.department_name
+      FROM employee_profiles ep
+      LEFT JOIN departments d
+      ON ep.department_id = d.id
+      WHERE ep.id = $1
+      `,
       [id],
     );
 
@@ -68,7 +116,36 @@ const getEmployeeById = async (req, res) => {
     });
   }
 };
+const getEmployeeByName = async (req, res) => {
+  try {
+    const { name } = req.params;
 
+    const result = await pool.query(
+      `
+      SELECT
+        ep.*,
+        d.department_name
+      FROM employee_profiles ep
+      LEFT JOIN departments d
+      ON ep.department_id = d.id
+      WHERE ep.name = $1
+      `,
+      [name],
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        message: "Employee not found",
+      });
+    }
+
+    res.json(result.rows[0]);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
 // Assign Skills
 const assignSkills = async (req, res) => {
   try {
@@ -169,9 +246,11 @@ module.exports = {
   createEmployee,
   getEmployees,
   getEmployeeById,
+  getEmployeeByName,
   assignSkills,
   getEmployeeDepartment,
   getEmployeeSkills,
   uploadFiles,
   deleteEmployee,
+  updateEmployee,
 };

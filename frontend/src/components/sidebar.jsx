@@ -1,49 +1,163 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import {
+  FaTachometerAlt,
+  FaUsers,
+  FaBuilding,
+  FaTools,
+  FaCalendarAlt,
+  FaClipboardList,
+  FaHistory,
+  FaSignOutAlt,
+  FaUser,
+} from "react-icons/fa";
 
 function Sidebar() {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const role = localStorage.getItem("role");
+  const name = localStorage.getItem("name");
+
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/");
+  };
+
+  const isActive = (path) => (location.pathname === path ? "active-menu" : "");
 
   return (
     <div className="sidebar">
-      <h3 className="mb-4">EMS</h3>
+      {/* Logo */}{" "}
+      <div className="sidebar-logo">
+        {" "}
+        <h3>EMS</h3>
+        ```
+        <span>Employee Management System</span>
+        <div className="role-badge mt-3">{role}</div>
+      </div>
+      {/* User */}
+      <div className="sidebar-user">
+        <img
+          src={`https://ui-avatars.com/api/?name=${name}&background=1677ff&color=fff`}
+          alt="User"
+        />
 
-      <button
-        className="btn btn-primary w-100 mb-2"
-        onClick={() => navigate("/dashboard")}
-      >
-        Dashboard
-      </button>
+        <div>
+          <h6>{name}</h6>
+          <small>{role}</small>
+        </div>
+      </div>
+      <ul className="sidebar-menu">
+        {/* Dashboard */}
+        <li
+          className={isActive("/dashboard")}
+          onClick={() => navigate("/dashboard")}
+        >
+          <FaTachometerAlt />
+          Dashboard
+        </li>
 
-      <button
-        className="btn btn-success w-100 mb-2"
-        onClick={() => navigate("/employees")}
-      >
-        Employees
-      </button>
+        {/* HR */}
+        {role === "HR" && (
+          <>
+            <li
+              className={isActive("/employees")}
+              onClick={() => navigate("/employees")}
+            >
+              <FaUsers />
+              Employees
+            </li>
 
-      <button
-        className="btn btn-warning w-100 mb-2"
-        onClick={() => navigate("/departments")}
-      >
-        Departments
-      </button>
+            <li
+              className={isActive("/departments")}
+              onClick={() => navigate("/departments")}
+            >
+              <FaBuilding />
+              Departments
+            </li>
 
-      <button
-        className="btn btn-info w-100 mb-2"
-        onClick={() => navigate("/skills")}
-      >
-        Skills
-      </button>
+            <li
+              className={isActive("/skills")}
+              onClick={() => navigate("/skills")}
+            >
+              <FaTools />
+              Skills
+            </li>
 
-      <button
-        className="btn btn-danger w-100 mt-4"
-        onClick={() => {
-          localStorage.removeItem("token");
-          navigate("/");
-        }}
-      >
-        Logout
-      </button>
+            <li
+              className={isActive("/leave-requests")}
+              onClick={() => navigate("/leave-requests")}
+            >
+              <FaClipboardList />
+              Leave Requests
+            </li>
+
+            <li
+              className={isActive("/approval-history")}
+              onClick={() => navigate("/approval-history")}
+            >
+              <FaHistory />
+              Approval History
+            </li>
+          </>
+        )}
+
+        {/* Manager */}
+        {role === "Manager" && (
+          <>
+            <li
+              className={isActive("/employees")}
+              onClick={() => navigate("/employees")}
+            >
+              <FaUsers />
+              Employees
+            </li>
+
+            <li
+              className={isActive("/leave-requests")}
+              onClick={() => navigate("/leave-requests")}
+            >
+              <FaClipboardList />
+              Leave Requests
+            </li>
+
+            <li
+              className={isActive("/approval-history")}
+              onClick={() => navigate("/approval-history")}
+            >
+              <FaHistory />
+              Approval History
+            </li>
+          </>
+        )}
+
+        {/* Employee */}
+        {role === "Employee" && (
+          <>
+            <li
+              className={isActive("/profile")}
+              onClick={() => navigate("/profile")}
+            >
+              <FaUser />
+              My Profile
+            </li>
+
+            <li
+              className={isActive("/leave-application")}
+              onClick={() => navigate("/leave-application")}
+            >
+              <FaCalendarAlt />
+              Apply Leave
+            </li>
+          </>
+        )}
+
+        {/* Logout */}
+        <li className="logout-btn" onClick={handleLogout}>
+          <FaSignOutAlt />
+          Logout
+        </li>
+      </ul>
     </div>
   );
 }

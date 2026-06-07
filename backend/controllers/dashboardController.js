@@ -11,9 +11,9 @@ const getDashboardStats = async (req, res) => {
     const skills = await pool.query("SELECT COUNT(*) FROM skills");
 
     res.json({
-      totalEmployees: employees.rows[0].count,
-      totalDepartments: departments.rows[0].count,
-      totalSkills: skills.rows[0].count,
+      totalEmployees: Number(employees.rows[0].count),
+      totalDepartments: Number(departments.rows[0].count),
+      totalSkills: Number(skills.rows[0].count),
       totalImages: 0,
     });
   } catch (error) {
@@ -23,6 +23,45 @@ const getDashboardStats = async (req, res) => {
   }
 };
 
+const getDepartmentChart = async (req, res) => {
+  try {
+    const result = await pool.query(`       SELECT
+        d.department_name,
+        COUNT(ep.id)::int AS total
+      FROM departments d
+      LEFT JOIN employee_profiles ep
+      ON d.id = ep.department_id
+      GROUP BY d.department_name
+      ORDER BY total DESC
+    `);
+
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+const getLeaveStatusChart = async (req, res) => {
+  try {
+    const result = await pool.query(`       SELECT
+        status,
+        COUNT(*)::int AS total
+      FROM leave_applications
+      GROUP BY status
+    `);
+
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   getDashboardStats,
+  getDepartmentChart,
+  getLeaveStatusChart,
 };

@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 function Skills() {
   const [skillName, setSkillName] = useState("");
   const [skills, setSkills] = useState([]);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     fetchSkills();
@@ -38,9 +39,9 @@ function Skills() {
       toast.success("Skill Added Successfully ✅");
 
       setSkillName("");
-
       fetchSkills();
     } catch (error) {
+      console.log(error);
       toast.error("Failed to Add Skill");
     }
   };
@@ -56,10 +57,13 @@ function Skills() {
       fetchSkills();
     } catch (error) {
       console.log(error);
-
       toast.error("Cannot delete skill. It may be assigned to employees.");
     }
   };
+
+  const filteredSkills = skills.filter((skill) =>
+    skill.skill_name?.toLowerCase().includes(search.toLowerCase()),
+  );
 
   return (
     <>
@@ -68,63 +72,113 @@ function Skills() {
       <div className="main-content">
         <Topbar />
 
-        <div className="card p-4 shadow-sm">
-          <div className="d-flex justify-content-between align-items-center mb-3">
-            <h2>Skills Management</h2>
+        {/* Header */}
+        <div className="card p-4 shadow-sm mb-4">
+          <h2 className="fw-bold">Skills Management</h2>
 
-            <span className="badge bg-primary fs-6">
-              Total Skills: {skills.length}
-            </span>
+          <p className="text-muted mb-0">
+            Manage employee skills and competencies.
+          </p>
+        </div>
+
+        {/* Stats */}
+        <div className="row mb-4">
+          <div className="col-md-6">
+            <div className="card p-3 shadow-sm text-center">
+              <h6>Total Skills</h6>
+              <h2>{skills.length}</h2>
+            </div>
           </div>
 
+          <div className="col-md-6">
+            <div className="card p-3 shadow-sm text-center">
+              <h6>Search Results</h6>
+              <h2>{filteredSkills.length}</h2>
+            </div>
+          </div>
+        </div>
+
+        {/* Add Skill */}
+        <div className="card p-4 shadow-sm mb-4">
+          <h4 className="mb-3">Add New Skill</h4>
+
           <form onSubmit={handleAddSkill}>
-            <input
-              className="form-control mb-3"
-              placeholder="Enter Skill Name"
-              value={skillName}
-              onChange={(e) => setSkillName(e.target.value)}
-            />
+            <div className="row">
+              <div className="col-md-9">
+                <input
+                  className="form-control"
+                  placeholder="Enter Skill Name"
+                  value={skillName}
+                  onChange={(e) => setSkillName(e.target.value)}
+                />
+              </div>
 
-            <button type="submit" className="btn btn-primary mb-4">
-              Add Skill
-            </button>
+              <div className="col-md-3">
+                <button type="submit" className="btn btn-primary w-100">
+                  + Add Skill
+                </button>
+              </div>
+            </div>
           </form>
+        </div>
 
-          <table className="table table-bordered table-hover">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Skill Name</th>
-                <th>Action</th>
-              </tr>
-            </thead>
+        {/* Skills List */}
+        <div className="card p-4 shadow-sm">
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <h4 className="mb-0">Skills Directory</h4>
 
-            <tbody>
-              {skills.length > 0 ? (
-                skills.map((skill) => (
-                  <tr key={skill.id}>
-                    <td>{skill.id}</td>
-                    <td>{skill.skill_name}</td>
+            <input
+              type="text"
+              className="form-control"
+              style={{ width: "280px" }}
+              placeholder="🔍 Search Skill"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
 
-                    <td>
-                      <button
-                        className="btn btn-danger btn-sm"
-                        onClick={() => handleDelete(skill.id)}
-                      >
-                        Delete
-                      </button>
+          <div className="table-responsive">
+            <table className="table table-hover align-middle">
+              <thead className="table-light">
+                <tr>
+                  <th>ID</th>
+                  <th>Skill</th>
+                  <th width="150">Action</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {filteredSkills.length > 0 ? (
+                  filteredSkills.map((skill) => (
+                    <tr key={skill.id}>
+                      <td>#{skill.id}</td>
+
+                      <td>
+                        <span className="badge bg-success fs-6">
+                          {skill.skill_name}
+                        </span>
+                      </td>
+
+                      <td>
+                        <button
+                          className="btn btn-danger btn-sm"
+                          onClick={() => handleDelete(skill.id)}
+                        >
+                          🗑 Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="3" className="text-center">
+                      No Skills Found
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="3" className="text-center">
-                    No Skills Found
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </>

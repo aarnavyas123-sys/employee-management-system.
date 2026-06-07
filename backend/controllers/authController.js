@@ -3,15 +3,15 @@ const bcrypt = require("bcrypt");
 
 const signup = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, role } = req.body;
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const result = await pool.query(
-      `INSERT INTO users(name,email,password)
-       VALUES($1,$2,$3)
+      `INSERT INTO users(name,email,password,role)
+        VALUES($1,$2,$3,$4)
        RETURNING *`,
-      [name, email, hashedPassword],
+      [name, email, hashedPassword, role],
     );
 
     res.status(201).json({
@@ -40,7 +40,7 @@ const login = async (req, res) => {
     }
 
     const user = result.rows[0];
-
+    console.log("USER DATA:", user);
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
@@ -53,6 +53,7 @@ const login = async (req, res) => {
       {
         id: user.id,
         email: user.email,
+        role: user.role,
       },
       process.env.JWT_SECRET,
       {
@@ -63,6 +64,9 @@ const login = async (req, res) => {
     res.json({
       message: "Login Successful",
       token,
+      role: user.role,
+      name: user.name,
+      id: user.id,
     });
   } catch (error) {
     res.status(500).json({
