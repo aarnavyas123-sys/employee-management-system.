@@ -25,12 +25,15 @@ function Dashboard() {
     totalEmployees: 0,
     totalDepartments: 0,
     totalSkills: 0,
+    totalAssets: 0,
+    allocatedAssets: 0,
+    availableAssets: 0,
   });
 
   const [recentEmployees, setRecentEmployees] = useState([]);
   const [chartData, setChartData] = useState([]);
   const [leaveChartData, setLeaveChartData] = useState([]);
-
+  const [assetChartData, setAssetChartData] = useState([]);
   useEffect(() => {
     fetchData();
   }, []);
@@ -48,6 +51,10 @@ function Dashboard() {
 
       const employeeRes = await API.get("/employees");
       setRecentEmployees(employeeRes.data.slice(0, 5));
+
+      const assetRes = await API.get("/dashboard-stats/asset-chart");
+
+      setAssetChartData(assetRes.data);
     } catch (error) {
       console.log(error);
     }
@@ -304,6 +311,29 @@ function Dashboard() {
                   color="bg-secondary"
                 />
               </div>
+              <div className="col-md-3">
+                <StatsCard
+                  title="Total Assets"
+                  value={stats.totalAssets}
+                  color="bg-info"
+                />
+              </div>
+
+              <div className="col-md-3">
+                <StatsCard
+                  title="Allocated Assets"
+                  value={stats.allocatedAssets}
+                  color="bg-danger"
+                />
+              </div>
+
+              <div className="col-md-3">
+                <StatsCard
+                  title="Available Assets"
+                  value={stats.availableAssets}
+                  color="bg-dark"
+                />
+              </div>
             </div>
 
             <div className="row mt-4">
@@ -358,6 +388,31 @@ function Dashboard() {
                         label
                       >
                         {leaveChartData.map((entry, index) => (
+                          <Cell
+                            key={index}
+                            fill={COLORS[index % COLORS.length]}
+                          />
+                        ))}
+                      </Pie>
+
+                      <Tooltip />
+                      <Legend />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="card p-3 shadow-sm mt-3">
+                  <h5>Asset Status</h5>
+
+                  <ResponsiveContainer width="100%" height={300}>
+                    <PieChart>
+                      <Pie
+                        data={assetChartData}
+                        dataKey="total"
+                        nameKey="status"
+                        outerRadius={90}
+                        label
+                      >
+                        {assetChartData.map((entry, index) => (
                           <Cell
                             key={index}
                             fill={COLORS[index % COLORS.length]}

@@ -12,6 +12,11 @@ const dashboardRoutes = require("./routes/dashboardRoutes");
 const leaveRoutes = require("./routes/leaveRoutes");
 const authMiddleware = require("./middleware/authMiddleware");
 const leaveTypeRoutes = require("./routes/leaveTypeRoutes");
+const assetRoutes = require("./routes/assetRoutes");
+const assetAllocationRoutes = require("./routes/assetAllocationRoutes");
+const reportRoutes = require("./routes/reportRoutes");
+const exportRoutes = require("./routes/exportRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
 const app = express();
 
 app.use(cors());
@@ -25,7 +30,12 @@ app.use("/api/dashboard-stats", dashboardRoutes);
 app.use("/api/leaves", leaveRoutes);
 app.use("/api/leave-types", leaveTypeRoutes);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use("/api/assets", assetRoutes);
+app.use("/api/asset-allocations", assetAllocationRoutes);
 
+app.use("/api/export", exportRoutes);
+app.use("/api/reports", reportRoutes);
+app.use("/api/notifications", notificationRoutes);
 app.get("/api/dashboard", authMiddleware, (req, res) => {
   res.json({
     message: "Welcome Dashboard",

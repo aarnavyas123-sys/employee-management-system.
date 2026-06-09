@@ -9,6 +9,7 @@ import {
   FaHistory,
   FaSignOutAlt,
   FaUser,
+  FaBell,
 } from "react-icons/fa";
 
 function Sidebar() {
@@ -27,15 +28,15 @@ function Sidebar() {
 
   return (
     <div className="sidebar">
-      {/* Logo */}{" "}
+      {/* Logo */}
       <div className="sidebar-logo">
-        {" "}
         <h3>EMS</h3>
-        ```
         <span>Employee Management System</span>
+
         <div className="role-badge mt-3">{role}</div>
       </div>
-      {/* User */}
+
+      {/* User Info */}
       <div className="sidebar-user">
         <img
           src={`https://ui-avatars.com/api/?name=${name}&background=1677ff&color=fff`}
@@ -47,8 +48,9 @@ function Sidebar() {
           <small>{role}</small>
         </div>
       </div>
+
       <ul className="sidebar-menu">
-        {/* Dashboard */}
+        {/* Dashboard - All Users */}
         <li
           className={isActive("/dashboard")}
           onClick={() => navigate("/dashboard")}
@@ -57,7 +59,7 @@ function Sidebar() {
           Dashboard
         </li>
 
-        {/* HR */}
+        {/* ================= HR ================= */}
         {role === "HR" && (
           <>
             <li
@@ -99,10 +101,32 @@ function Sidebar() {
               <FaHistory />
               Approval History
             </li>
+
+            <li
+              className={isActive("/assets")}
+              onClick={() => navigate("/assets")}
+            >
+              <FaTools />
+              Assets
+            </li>
+
+            <li
+              className={isActive("/reports")}
+              onClick={() => navigate("/reports")}
+            >
+              📊 Reports
+            </li>
+
+            <li
+              className={isActive("/audit-logs")}
+              onClick={() => navigate("/audit-logs")}
+            >
+              📋 Audit Logs
+            </li>
           </>
         )}
 
-        {/* Manager */}
+        {/* ================= MANAGER ================= */}
         {role === "Manager" && (
           <>
             <li
@@ -131,7 +155,7 @@ function Sidebar() {
           </>
         )}
 
-        {/* Employee */}
+        {/* ================= EMPLOYEE ================= */}
         {role === "Employee" && (
           <>
             <li
@@ -151,6 +175,15 @@ function Sidebar() {
             </li>
           </>
         )}
+
+        {/* Notifications - All Users */}
+        <li
+          className={isActive("/notifications")}
+          onClick={() => navigate("/notifications")}
+        >
+          <FaBell />
+          Notifications
+        </li>
 
         {/* Logout */}
         <li className="logout-btn" onClick={handleLogout}>

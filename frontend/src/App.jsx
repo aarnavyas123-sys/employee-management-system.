@@ -10,12 +10,17 @@ import AddEmployee from "./pages/AddEmployee";
 import LeaveApplication from "./pages/LeaveApplication";
 import LeaveRequests from "./pages/LeaveRequests";
 import ApprovalHistory from "./pages/ApprovalHistory";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import EmployeeDetails from "./pages/EmployeeDetails";
 import EditEmployee from "./pages/EditEmployee";
 import Profile from "./pages/Profile";
+import Notifications from "./pages/Notifications";
+import Assets from "./pages/Assets";
+import Reports from "./pages/Reports";
+
 import ProtectedRoute from "./components/ProtectedRoute";
+
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return (
@@ -24,9 +29,17 @@ function App() {
         {/* Authentication */}
         <Route path="/" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+
         {/* Dashboard */}
-        <Route path="/dashboard" element={<Dashboard />} />
-        {/* Employee Management */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute allowedRoles={["HR", "Manager", "Employee"]}>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+
         {/* Employee Management */}
         <Route
           path="/employees"
@@ -35,7 +48,8 @@ function App() {
               <Employees />
             </ProtectedRoute>
           }
-        />{" "}
+        />
+
         <Route
           path="/add-employee"
           element={
@@ -43,7 +57,8 @@ function App() {
               <AddEmployee />
             </ProtectedRoute>
           }
-        />{" "}
+        />
+
         <Route
           path="/edit-employee/:id"
           element={
@@ -51,7 +66,8 @@ function App() {
               <EditEmployee />
             </ProtectedRoute>
           }
-        />{" "}
+        />
+
         <Route
           path="/employee-details/:id"
           element={
@@ -59,8 +75,9 @@ function App() {
               <EmployeeDetails />
             </ProtectedRoute>
           }
-        />{" "}
-        {/* Department & Skills */}
+        />
+
+        {/* Departments */}
         <Route
           path="/departments"
           element={
@@ -68,7 +85,9 @@ function App() {
               <Departments />
             </ProtectedRoute>
           }
-        />{" "}
+        />
+
+        {/* Skills */}
         <Route
           path="/skills"
           element={
@@ -76,9 +95,18 @@ function App() {
               <Skills />
             </ProtectedRoute>
           }
-        />{" "}
+        />
+
         {/* Leave Management */}
-        <Route path="/leave-application" element={<LeaveApplication />} />
+        <Route
+          path="/leave-application"
+          element={
+            <ProtectedRoute allowedRoles={["Employee"]}>
+              <LeaveApplication />
+            </ProtectedRoute>
+          }
+        />
+
         <Route
           path="/leave-requests"
           element={
@@ -86,7 +114,8 @@ function App() {
               <LeaveRequests />
             </ProtectedRoute>
           }
-        />{" "}
+        />
+
         <Route
           path="/approval-history"
           element={
@@ -94,7 +123,9 @@ function App() {
               <ApprovalHistory />
             </ProtectedRoute>
           }
-        />{" "}
+        />
+
+        {/* Employee Profile */}
         <Route
           path="/profile"
           element={
@@ -102,7 +133,37 @@ function App() {
               <Profile />
             </ProtectedRoute>
           }
-        />{" "}
+        />
+
+        {/* Notifications */}
+        <Route
+          path="/notifications"
+          element={
+            <ProtectedRoute allowedRoles={["HR", "Manager", "Employee"]}>
+              <Notifications />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Assets - HR Only */}
+        <Route
+          path="/assets"
+          element={
+            <ProtectedRoute allowedRoles={["HR"]}>
+              <Assets />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Reports - HR Only */}
+        <Route
+          path="/reports"
+          element={
+            <ProtectedRoute allowedRoles={["HR"]}>
+              <Reports />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
 
       <ToastContainer position="top-right" autoClose={2000} />
