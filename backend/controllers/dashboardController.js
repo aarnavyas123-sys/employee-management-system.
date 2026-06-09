@@ -17,6 +17,8 @@ const getDashboardStats = async (req, res) => {
       totalImages: 0,
     });
   } catch (error) {
+    console.log(error);
+
     res.status(500).json({
       message: error.message,
     });
@@ -37,6 +39,8 @@ const getDepartmentChart = async (req, res) => {
 
     res.json(result.rows);
   } catch (error) {
+    console.log(error);
+
     res.status(500).json({
       message: error.message,
     });
@@ -54,6 +58,8 @@ const getLeaveStatusChart = async (req, res) => {
 
     res.json(result.rows);
   } catch (error) {
+    console.log(error);
+
     res.status(500).json({
       message: error.message,
     });
