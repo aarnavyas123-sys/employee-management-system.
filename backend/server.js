@@ -10,32 +10,49 @@ const skillRoutes = require("./routes/skillRoutes");
 const employeeRoutes = require("./routes/employeeRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 const leaveRoutes = require("./routes/leaveRoutes");
-const authMiddleware = require("./middleware/authMiddleware");
 const leaveTypeRoutes = require("./routes/leaveTypeRoutes");
 const assetRoutes = require("./routes/assetRoutes");
 const assetAllocationRoutes = require("./routes/assetAllocationRoutes");
 const reportRoutes = require("./routes/reportRoutes");
 const exportRoutes = require("./routes/exportRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
+const passwordRoutes = require("./routes/passwordRoutes");
+const healthRoutes = require("./routes/healthRoutes");
+const auditRoutes = require("./routes/auditRoutes");
+const authMiddleware = require("./middleware/authMiddleware");
+const errorHandler = require("./middleware/errorMiddleware");
+const viewRoutes = require("./routes/viewRoutes");
+const logger = require("./config/logger");
+const startLeaveReminderJob = require("./jobs/leaveReminderJob");
+const emailRoutes = require("./routes/emailRoutes");
+const attendanceRoutes = require("./routes/attendanceRoutes");
 const app = express();
 
 app.use(cors());
 app.use(express.json());
-app.use("/api/leave-types", leaveTypeRoutes);
-app.use("/api/auth", authRoutes);
-app.use("/api/departments", departmentRoutes);
-app.use("/api/skills", skillRoutes);
-app.use("/api/employees", employeeRoutes);
-app.use("/api/dashboard-stats", dashboardRoutes);
-app.use("/api/leaves", leaveRoutes);
-app.use("/api/leave-types", leaveTypeRoutes);
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-app.use("/api/assets", assetRoutes);
-app.use("/api/asset-allocations", assetAllocationRoutes);
 
-app.use("/api/export", exportRoutes);
-app.use("/api/reports", reportRoutes);
-app.use("/api/notifications", notificationRoutes);
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+/* Routes */
+app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/departments", departmentRoutes);
+app.use("/api/v1/skills", skillRoutes);
+app.use("/api/v1/employees", employeeRoutes);
+app.use("/api/v1/dashboard-stats", dashboardRoutes);
+app.use("/api/v1/leaves", leaveRoutes);
+app.use("/api/v1/leave-types", leaveTypeRoutes);
+app.use("/api/v1/assets", assetRoutes);
+app.use("/api/v1/asset-allocations", assetAllocationRoutes);
+app.use("/api/v1/password", passwordRoutes);
+app.use("/api/v1/export", exportRoutes);
+app.use("/api/v1/reports", reportRoutes);
+app.use("/api/v1/notifications", notificationRoutes);
+app.use("/api/v1/health", healthRoutes);
+app.use("/api/v1/views", viewRoutes);
+app.use("/api/v1/email", emailRoutes);
+app.use("/api/v1/audit-logs", auditRoutes);
+app.use("/api/v1/attendance", attendanceRoutes);
+/* Protected Dashboard */
 app.get("/api/dashboard", authMiddleware, (req, res) => {
   res.json({
     message: "Welcome Dashboard",
@@ -43,12 +60,20 @@ app.get("/api/dashboard", authMiddleware, (req, res) => {
   });
 });
 
+/* Root Route */
 app.get("/", (req, res) => {
   res.send("EMS Backend Running");
 });
 
+/* Error Handler MUST be LAST */
+app.use(errorHandler);
+
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+startLeaveReminderJob();
+
+const server = app.listen(PORT, () => {
+  logger.info(`Server running on port ${PORT}`);
 });
+
+module.exports = app;

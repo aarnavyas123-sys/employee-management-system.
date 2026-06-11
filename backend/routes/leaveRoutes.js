@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const authMiddleware = require("../middleware/authMiddleware"); // 📑 Added security middleware route injection
 
 const {
   applyLeave,
@@ -12,24 +13,15 @@ const {
   hrRejectLeave,
 } = require("../controllers/leaveController");
 
-// Apply Leave
-router.post("/", applyLeave);
+// Secure routing channels intercept configurations
+router.post("/", authMiddleware, applyLeave);
+router.get("/", authMiddleware, getLeaves);
+router.get("/history", authMiddleware, getApprovalHistory);
+router.get("/audit-logs", authMiddleware, getAuditLogs);
 
-// Get All Leave Requests
-router.get("/", getLeaves);
+router.put("/approve/:id", authMiddleware, approveLeave);
+router.put("/reject/:id", authMiddleware, rejectLeave);
+router.put("/hr-approve/:id", authMiddleware, hrApproveLeave);
+router.put("/hr-reject/:id", authMiddleware, hrRejectLeave);
 
-// Approval History
-router.get("/history", getApprovalHistory);
-
-// Audit Logs
-router.get("/audit-logs", getAuditLogs);
-
-// Approve Leave
-router.put("/approve/:id", approveLeave);
-
-// Reject Leave
-router.put("/reject/:id", rejectLeave);
-
-router.put("/hr-approve/:id", hrApproveLeave);
-router.put("/hr-reject/:id", hrRejectLeave);
 module.exports = router;

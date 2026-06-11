@@ -8,8 +8,11 @@ function Departments() {
   const [departmentName, setDepartmentName] = useState("");
   const [departments, setDepartments] = useState([]);
   const [search, setSearch] = useState("");
+  const [role, setRole] = useState("");
 
   useEffect(() => {
+    const storedRole = localStorage.getItem("role");
+    setRole(storedRole || "");
     fetchDepartments();
   }, []);
 
@@ -24,14 +27,11 @@ function Departments() {
 
   const handleAddDepartment = async (e) => {
     e.preventDefault();
-
     try {
       await API.post("/departments", {
         department_name: departmentName,
       });
-
       toast.success("Department Added Successfully ✅");
-
       setDepartmentName("");
       fetchDepartments();
     } catch {
@@ -41,12 +41,9 @@ function Departments() {
 
   const handleDelete = async (id) => {
     if (!window.confirm("Delete Department?")) return;
-
     try {
       await API.delete(`/departments/${id}`);
-
       toast.success("Department Deleted Successfully ✅");
-
       fetchDepartments();
     } catch {
       toast.error("Cannot delete department. Employees may still be assigned.");
@@ -59,7 +56,6 @@ function Departments() {
 
   return (
     <>
-      {" "}
       <Sidebar />
       <div className="main-content">
         <Topbar />
@@ -67,7 +63,6 @@ function Departments() {
         {/* Header */}
         <div className="card p-4 shadow-sm mb-4">
           <h2 className="fw-bold">Department Management</h2>
-
           <p className="text-muted mb-0">
             Create and manage company departments.
           </p>
@@ -90,36 +85,36 @@ function Departments() {
           </div>
         </div>
 
-        {/* Add Department */}
-        <div className="card p-4 shadow-sm mb-4">
-          <h4 className="mb-3">Add New Department</h4>
-
-          <form onSubmit={handleAddDepartment}>
-            <div className="row">
-              <div className="col-md-9">
-                <input
-                  className="form-control"
-                  placeholder="Enter Department Name"
-                  value={departmentName}
-                  onChange={(e) => setDepartmentName(e.target.value)}
-                  required
-                />
+        {/* Add Department Section - Only rendered if user role is HR */}
+        {role === "HR" && (
+          <div className="card p-4 shadow-sm mb-4">
+            <h4 className="mb-3">Add New Department</h4>
+            <form onSubmit={handleAddDepartment}>
+              <div className="row">
+                <div className="col-md-9">
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Enter Department Name"
+                    value={departmentName}
+                    onChange={(e) => setDepartmentName(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="col-md-3">
+                  <button type="submit" className="btn btn-success w-100">
+                    + Add Department
+                  </button>
+                </div>
               </div>
-
-              <div className="col-md-3">
-                <button type="submit" className="btn btn-success w-100">
-                  + Add Department
-                </button>
-              </div>
-            </div>
-          </form>
-        </div>
+            </form>
+          </div>
+        )}
 
         {/* Department List */}
         <div className="card p-4 shadow-sm">
           <div className="d-flex justify-content-between align-items-center mb-3">
             <h4 className="mb-0">Department Directory</h4>
-
             <input
               type="text"
               className="form-control"
@@ -145,20 +140,22 @@ function Departments() {
                   filteredDepartments.map((dept) => (
                     <tr key={dept.id}>
                       <td>#{dept.id}</td>
-
                       <td>
                         <span className="badge bg-primary fs-6">
                           {dept.department_name}
                         </span>
                       </td>
-
                       <td>
-                        <button
-                          className="btn btn-danger btn-sm"
-                          onClick={() => handleDelete(dept.id)}
-                        >
-                          🗑 Delete
-                        </button>
+                        {role === "HR" ? (
+                          <button
+                            className="btn btn-danger btn-sm"
+                            onClick={() => handleDelete(dept.id)}
+                          >
+                            🗑 Delete
+                          </button>
+                        ) : (
+                          <span className="badge bg-secondary">View Only</span>
+                        )}
                       </td>
                     </tr>
                   ))
@@ -178,4 +175,5 @@ function Departments() {
   );
 }
 
+// 📑 YAHAN PE PAHLE GALTI SE 'Dashboard' EXPORT HO RAHA THA, ISS KO 'Departments' KAR DIYA HAI
 export default Departments;

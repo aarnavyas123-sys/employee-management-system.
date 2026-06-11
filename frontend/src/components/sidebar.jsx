@@ -10,6 +10,7 @@ import {
   FaSignOutAlt,
   FaUser,
   FaBell,
+  FaUserShield,
 } from "react-icons/fa";
 
 function Sidebar() {
@@ -28,14 +29,12 @@ function Sidebar() {
 
   return (
     <div className="sidebar">
-      {/* Logo */}
+      {/* Logo */}{" "}
       <div className="sidebar-logo">
-        <h3>EMS</h3>
-        <span>Employee Management System</span>
-
+        {" "}
+        <h3>EMS</h3> <span>Employee Management System</span>
         <div className="role-badge mt-3">{role}</div>
       </div>
-
       {/* User Info */}
       <div className="sidebar-user">
         <img
@@ -48,9 +47,8 @@ function Sidebar() {
           <small>{role}</small>
         </div>
       </div>
-
       <ul className="sidebar-menu">
-        {/* Dashboard - All Users */}
+        {/* Dashboard */}
         <li
           className={isActive("/dashboard")}
           onClick={() => navigate("/dashboard")}
@@ -59,7 +57,68 @@ function Sidebar() {
           Dashboard
         </li>
 
-        {/* ================= HR ================= */}
+        {/* Attendance */}
+        <li
+          className={isActive("/attendance")}
+          onClick={() => navigate("/attendance")}
+        >
+          <FaCalendarAlt />
+          Attendance
+        </li>
+
+        {/* ADMIN & HR */}
+        {/* ADMIN */}
+        {role === "Admin" && (
+          <>
+            <li
+              className={isActive("/employees")}
+              onClick={() => navigate("/employees")}
+            >
+              <FaUsers />
+              Employees
+            </li>
+
+            <li
+              className={isActive("/departments")}
+              onClick={() => navigate("/departments")}
+            >
+              <FaBuilding />
+              Departments
+            </li>
+
+            <li
+              className={isActive("/assets")}
+              onClick={() => navigate("/assets")}
+            >
+              <FaTools />
+              Assets
+            </li>
+
+            <li
+              className={isActive("/reports")}
+              onClick={() => navigate("/reports")}
+            >
+              📊 Reports
+            </li>
+
+            <li
+              className={isActive("/audit-logs")}
+              onClick={() => navigate("/audit-logs")}
+            >
+              📋 Audit Logs
+            </li>
+
+            <li
+              className={isActive("/users")}
+              onClick={() => navigate("/users")}
+            >
+              <FaUserShield />
+              User Management
+            </li>
+          </>
+        )}
+
+        {/* HR */}
         {role === "HR" && (
           <>
             <li
@@ -116,17 +175,10 @@ function Sidebar() {
             >
               📊 Reports
             </li>
-
-            <li
-              className={isActive("/audit-logs")}
-              onClick={() => navigate("/audit-logs")}
-            >
-              📋 Audit Logs
-            </li>
           </>
         )}
 
-        {/* ================= MANAGER ================= */}
+        {/* MANAGER */}
         {role === "Manager" && (
           <>
             <li
@@ -155,7 +207,7 @@ function Sidebar() {
           </>
         )}
 
-        {/* ================= EMPLOYEE ================= */}
+        {/* EMPLOYEE */}
         {role === "Employee" && (
           <>
             <li
@@ -176,7 +228,7 @@ function Sidebar() {
           </>
         )}
 
-        {/* Notifications - All Users */}
+        {/* Notifications */}
         <li
           className={isActive("/notifications")}
           onClick={() => navigate("/notifications")}

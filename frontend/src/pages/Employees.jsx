@@ -17,7 +17,8 @@ function Employees() {
   const fetchEmployees = async () => {
     try {
       const res = await API.get("/employees");
-      setEmployees(res.data);
+
+      setEmployees(res.data.employees);
     } catch (error) {
       console.log(error);
       toast.error("Failed to Fetch Employees");

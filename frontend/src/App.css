@@ -1,7 +1,6 @@
-/* LOGIN & SIGNUP */
-
-/* ================= LOGIN & SIGNUP ================= */
-
+/* ==========================================================================
+   1. AUTHENTICATION (LOGIN & SIGNUP)
+   ========================================================================== */
 .auth-container {
   min-height: 100vh;
   background: #f5f6f8;
@@ -171,36 +170,17 @@
   font-size: 14px;
 }
 
-/* DASHBOARD */
+/* ==========================================================================
+   2. APP LAYOUT & CORE SYSTEM ELEMENTS
+   ========================================================================== */
+body {
+  background: #f4f6f9;
+}
 
 .main-content {
-  margin-left: 250px;
+  margin-left: 260px; /* Sidebar width matching framework grid */
   padding: 20px;
-  background: #f4f6f9;
   min-height: 100vh;
-}
-
-.sidebar {
-  width: 250px;
-  height: 100vh;
-  background: white;
-  position: fixed;
-  left: 0;
-  top: 0;
-  padding: 20px;
-  border-right: 1px solid #ddd;
-}
-
-.sidebar h3 {
-  color: #0d6efd;
-  margin-bottom: 30px;
-}
-
-.sidebar button {
-  width: 100%;
-  margin-bottom: 10px;
-  text-align: left;
-  border-radius: 10px;
 }
 
 .card {
@@ -213,122 +193,236 @@
   background: #f8f9fa;
 }
 
-.topbar {
-  background: white;
-  padding: 20px;
-  border-radius: 15px;
-  margin-bottom: 20px;
-}
-
-body {
-  background: #f4f6f9;
-}
-
+/* ==========================================================================
+   3. MODERN SCROLLABLE SIDEBAR SYSTEM
+   ========================================================================== */
 .sidebar {
-  width: 250px;
+  width: 260px;
   height: 100vh;
-  background: #fff;
+  background: white;
   position: fixed;
   left: 0;
   top: 0;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.08);
-  padding: 20px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.08);
+  padding: 25px 15px;
+  z-index: 1000;
+
+  /* Layout setup for internal scrolling orchestration */
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto; /* Generates auto scroll when menu items overflow viewport */
+  overflow-x: hidden; /* Prevents horizontal layout rendering shift errors */
+}
+
+/* Chrome, Safari, and Edge scrollbar interface styling overrides */
+.sidebar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: #1677ff;
 }
 
 .sidebar-logo {
-  margin-bottom: 30px;
+  padding: 10px 15px 20px;
+  flex-shrink: 0; /* Ensures critical global identity components do not distort */
 }
 
-.sidebar-logo h4 {
-  color: #0d6efd;
+.sidebar-logo h3 {
+  color: #1677ff;
+  font-size: 32px;
   font-weight: 700;
+  margin-bottom: 5px;
+}
+
+.sidebar-logo span {
+  color: #777;
+  font-size: 13px;
+}
+
+.sidebar-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #f8fafc;
+  padding: 12px;
+  border-radius: 12px;
+  margin-bottom: 25px;
+  flex-shrink: 0; /* Profile summary locked from vertical compression behaviors */
+}
+
+.sidebar-user img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+
+.sidebar-user h6 {
+  margin: 0;
+  font-weight: 600;
+}
+
+.sidebar-user small {
+  color: #666;
 }
 
 .sidebar-menu {
   list-style: none;
   padding: 0;
+  margin-top: 10px;
+  flex-grow: 1; /* Grants full height permissions to menu node for isolated scrolling */
 }
 
 .sidebar-menu li {
-  padding: 12px;
-  border-radius: 10px;
-  margin-bottom: 10px;
-  cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+  color: #444;
+  font-weight: 500;
 }
 
 .sidebar-menu li:hover {
   background: #eef5ff;
+  color: #1677ff;
+}
+
+.active-menu {
+  background: #e7f1ff;
+  color: #1677ff !important;
+  font-weight: 600;
+  border-left: 4px solid #1677ff;
 }
 
 .logout-btn {
-  color: red;
+  margin-top: 30px;
+  color: #e53935 !important;
 }
 
-.main-content {
-  margin-left: 250px;
-  padding: 20px;
+.logout-btn:hover {
+  background: #ffebee !important;
 }
 
+.role-badge {
+  display: inline-block;
+  background: #1677ff;
+  color: white;
+  padding: 6px 14px;
+  border-radius: 30px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   4. TOPBAR COMPONENT
+   ========================================================================== */
 .topbar {
   background: white;
   padding: 15px 25px;
-  border-radius: 15px;
+  border-radius: 18px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  margin-bottom: 25px;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+}
+
+.topbar-left h4 {
+  margin: 0;
+  font-weight: 700;
+}
+
+.topbar-left small {
+  font-size: 13px;
 }
 
 .topbar-right {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 20px;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f5f7fb;
+  padding: 10px 15px;
+  border-radius: 10px;
+}
+
+.search-box input {
+  border: none;
+  outline: none;
+  background: transparent;
+}
+
+.notification-wrapper {
+  position: relative;
+}
+
+.notification-icon {
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: red;
+  color: white;
+  font-size: 10px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .user-box {
   display: flex;
   align-items: center;
+  padding: 8px 15px;
+  background: #f8f9fa;
+  border-radius: 12px;
   gap: 10px;
 }
 
 .user-box img {
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
 }
 
-.dashboard-card {
-  border-radius: 15px;
-  padding: 25px;
-  color: white;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+.user-box h6 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
 }
 
-.dashboard-card h1 {
-  margin-top: 10px;
-  font-size: 38px;
+.user-box small {
+  color: #6c757d;
+  font-size: 13px;
 }
 
-.bg-primary {
-  background: linear-gradient(135deg, #4e73df, #36b9cc) !important;
-}
-
-.bg-success {
-  background: linear-gradient(135deg, #1cc88a, #36b9cc) !important;
-}
-
-.bg-warning {
-  background: linear-gradient(135deg, #f6c23e, #f39c12) !important;
-}
-
-.bg-secondary {
-  background: linear-gradient(135deg, #858796, #5a5c69) !important;
-}
-
+/* ==========================================================================
+   5. ANALYTICAL WIDGET CARDS & GRAPHICS OVERLAYS
+   ========================================================================== */
 .dashboard-card {
   border-radius: 18px;
   padding: 25px;
@@ -370,6 +464,23 @@ body {
   font-size: 13px;
   opacity: 0.85;
 }
+
+.bg-primary {
+  background: linear-gradient(135deg, #4e73df, #36b9cc) !important;
+}
+
+.bg-success {
+  background: linear-gradient(135deg, #1cc88a, #36b9cc) !important;
+}
+
+.bg-warning {
+  background: linear-gradient(135deg, #f6c23e, #f39c12) !important;
+}
+
+.bg-secondary {
+  background: linear-gradient(135deg, #858796, #5a5c69) !important;
+}
+
 .welcome-banner {
   background: linear-gradient(135deg, #1677ff, #4096ff);
   color: white;
@@ -390,6 +501,10 @@ body {
   width: 90px;
   height: 90px;
 }
+
+/* ==========================================================================
+   6. UTILITY INTERFACES & MANAGEMENT LAYOUTS
+   ========================================================================== */
 .section-header {
   display: flex;
   justify-content: space-between;
@@ -415,138 +530,6 @@ body {
 
 .quick-btn:hover {
   background: #e7f1ff;
-}
-.sidebar {
-  width: 260px;
-  height: 100vh;
-  background: white;
-  position: fixed;
-  left: 0;
-  top: 0;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.08);
-  padding: 25px 15px;
-  z-index: 1000;
-}
-
-.sidebar-logo {
-  padding: 10px 15px 30px;
-}
-
-.sidebar-logo h3 {
-  color: #1677ff;
-  font-size: 32px;
-  font-weight: 700;
-  margin-bottom: 5px;
-}
-
-.sidebar-logo span {
-  color: #777;
-  font-size: 13px;
-}
-
-.sidebar-menu {
-  list-style: none;
-  padding: 0;
-  margin-top: 10px;
-}
-
-.sidebar-menu li {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
-  border-radius: 12px;
-  margin-bottom: 10px;
-  cursor: pointer;
-  transition: 0.3s;
-  color: #444;
-  font-weight: 500;
-}
-
-.sidebar-menu li:hover {
-  background: #eef5ff;
-  color: #1677ff;
-}
-
-.active-menu {
-  background: #e7f1ff;
-  color: #1677ff !important;
-  font-weight: 600;
-}
-
-.logout-btn {
-  margin-top: 30px;
-  color: #e53935 !important;
-}
-
-.logout-btn:hover {
-  background: #ffebee !important;
-}
-
-.topbar {
-  background: white;
-  padding: 15px 25px;
-  border-radius: 18px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 25px;
-  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
-}
-
-.topbar-left h4 {
-  margin: 0;
-  font-weight: 700;
-}
-
-.topbar-right {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.search-box {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: #f5f7fb;
-  padding: 10px 15px;
-  border-radius: 10px;
-}
-
-.search-box input {
-  border: none;
-  outline: none;
-  background: transparent;
-}
-
-.notification-icon {
-  font-size: 20px;
-  cursor: pointer;
-}
-
-.user-box {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.user-box {
-  display: flex;
-  align-items: center;
-  padding: 8px 15px;
-  background: #f8f9fa;
-  border-radius: 12px;
-}
-
-.user-box h6 {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.user-box small {
-  color: #6c757d;
-  font-size: 13px;
 }
 
 .employee-form-card {
@@ -626,82 +609,4 @@ body {
 .profile-info-box p {
   margin: 0;
   font-size: 16px;
-}
-
-.card h5 {
-  font-weight: 700;
-}
-
-.card p {
-  color: #666;
-}
-
-.sidebar-user {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: #f8fafc;
-  padding: 12px;
-  border-radius: 12px;
-  margin-bottom: 25px;
-}
-
-.sidebar-user img {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-}
-
-.sidebar-user h6 {
-  margin: 0;
-  font-weight: 600;
-}
-
-.sidebar-user small {
-  color: #666;
-}
-
-.role-badge {
-  display: inline-block;
-  background: #1677ff;
-  color: white;
-  padding: 6px 14px;
-  border-radius: 30px;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.active-menu {
-  background: #e7f1ff;
-  color: #1677ff !important;
-  font-weight: 600;
-  border-left: 4px solid #1677ff;
-}
-.notification-wrapper {
-  position: relative;
-}
-
-.notification-badge {
-  position: absolute;
-  top: -6px;
-  right: -6px;
-  background: red;
-  color: white;
-  font-size: 10px;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.user-box img {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-}
-
-.topbar-left small {
-  font-size: 13px;
 }

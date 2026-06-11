@@ -1,5 +1,6 @@
 const pool = require("../config/db");
-
+const cache = require("../config/cache");
+const logAction = require("../utils/auditLogger");
 // Create Employee
 const createEmployee = async (req, res) => {
   try {
@@ -13,6 +14,12 @@ const createEmployee = async (req, res) => {
       RETURNING *`,
       [name, department_id, phone, address, designation, salary],
     );
+    await logAction(
+      req.user?.id || 1,
+      "Employee Created",
+      `Employee ${name} was created`,
+    );
+    cache.flushAll();
 
     res.status(201).json(result.rows[0]);
   } catch (error) {
@@ -47,6 +54,12 @@ const updateEmployee = async (req, res) => {
       [name, department_id, phone, address, designation, salary, id],
     );
 
+    cache.flushAll();
+    await logAction(
+      req.user?.id || 1,
+      "Employee Updated",
+      `Employee ID ${id} was updated`,
+    );
     res.json({
       message: "Employee Updated Successfully",
       employee: result.rows[0],
@@ -60,11 +73,42 @@ const updateEmployee = async (req, res) => {
   }
 };
 // Get All Employees
+// Get All Employees
 const getEmployees = async (req, res) => {
   try {
-    const result = await pool.query(`
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 100;
+    const search = req.query.search || "";
+    const department = req.query.department || "";
+    const sort = req.query.sort || "id";
+
+    const cacheKey = `employees_${page}_${limit}_${search}_${department}_${sort}`;
+
+    const cachedData = cache.get(cacheKey);
+
+    if (cachedData) {
+      return res.json(cachedData);
+    }
+
+    const offset = (page - 1) * limit;
+
+    let orderBy = "ep.id DESC";
+
+    if (sort === "name") {
+      orderBy = "ep.name ASC";
+    }
+
+    if (sort === "salary") {
+      orderBy = "ep.salary DESC";
+    }
+
+    console.log("Fetching From Database");
+
+    const employees = await pool.query(
+      `
       SELECT
         ep.id,
+        ep.user_id,
         ep.name,
         ep.department_id,
         d.department_name,
@@ -75,17 +119,45 @@ const getEmployees = async (req, res) => {
       FROM employee_profiles ep
       LEFT JOIN departments d
       ON ep.department_id = d.id
-      ORDER BY ep.id DESC
-    `);
+      WHERE ep.name ILIKE $1
+      AND d.department_name ILIKE $2
+      ORDER BY ${orderBy}
+      LIMIT $3 OFFSET $4
+      `,
+      [`%${search}%`, `%${department}%`, limit, offset],
+    );
 
-    res.json(result.rows);
+    const total = await pool.query(
+      `
+      SELECT COUNT(*)
+      FROM employee_profiles ep
+      LEFT JOIN departments d
+      ON ep.department_id = d.id
+      WHERE ep.name ILIKE $1
+      AND d.department_name ILIKE $2
+      `,
+      [`%${search}%`, `%${department}%`],
+    );
+
+    const responseData = {
+      currentPage: page,
+      search,
+      department,
+      sort,
+      totalEmployees: Number(total.rows[0].count),
+      totalPages: Math.ceil(Number(total.rows[0].count) / limit),
+      employees: employees.rows,
+    };
+
+    cache.set(cacheKey, responseData);
+
+    res.json(responseData);
   } catch (error) {
     res.status(500).json({
       message: error.message,
     });
   }
 };
-
 // Get Employee By ID
 const getEmployeeById = async (req, res) => {
   try {
@@ -232,6 +304,12 @@ const deleteEmployee = async (req, res) => {
 
     await pool.query("DELETE FROM employee_profiles WHERE id=$1", [id]);
 
+    cache.flushAll();
+    await logAction(
+      req.user?.id || 1,
+      "Employee Deleted",
+      `Employee ID ${id} was deleted`,
+    );
     res.json({
       message: "Employee Deleted Successfully",
     });

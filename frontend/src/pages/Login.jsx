@@ -24,7 +24,7 @@ function Login() {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/auth/login",
+        "http://localhost:5000/api/v1/auth/login",
         form,
       );
 
@@ -83,8 +83,10 @@ function Login() {
                 required
               />
 
-              <div className="forgot-link">
-                <a href="/">Forgot Password?</a>
+              <div className="text-center mt-3">
+                <Link to="/forgot-password" className="text-decoration-none">
+                  Forgot Password?
+                </Link>
               </div>
 
               <button type="submit" className="login-btn">

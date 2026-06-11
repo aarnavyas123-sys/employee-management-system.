@@ -1,53 +1,39 @@
 const pool = require("../config/db");
+const asyncHandler = require("../middleware/asyncHandler");
 
 // Get All Departments
-const getDepartments = async (req, res) => {
-  try {
-    const result = await pool.query("SELECT * FROM departments ORDER BY id");
+const getDepartments = asyncHandler(async (req, res) => {
+  const result = await pool.query("SELECT * FROM departments ORDER BY id");
 
-    res.json(result.rows);
-  } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
-  }
-};
+  res.json(result.rows);
+});
 
 // Add Department
-const createDepartment = async (req, res) => {
-  try {
-    const { department_name } = req.body;
+const createDepartment = asyncHandler(async (req, res) => {
+  const { department_name } = req.body;
 
-    const result = await pool.query(
-      `INSERT INTO departments(department_name)
-       VALUES($1)
-       RETURNING *`,
-      [department_name],
-    );
+  const result = await pool.query(
+    `
+    INSERT INTO departments(department_name)
+    VALUES($1)
+    RETURNING *
+    `,
+    [department_name],
+  );
 
-    res.status(201).json(result.rows[0]);
-  } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
-  }
-};
+  res.status(201).json(result.rows[0]);
+});
 
-const deleteDepartment = async (req, res) => {
-  try {
-    const { id } = req.params;
+// Delete Department
+const deleteDepartment = asyncHandler(async (req, res) => {
+  const { id } = req.params;
 
-    await pool.query("DELETE FROM departments WHERE id=$1", [id]);
+  await pool.query("DELETE FROM departments WHERE id=$1", [id]);
 
-    res.json({
-      message: "Department Deleted Successfully",
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
-  }
-};
+  res.json({
+    message: "Department Deleted Successfully",
+  });
+});
 
 module.exports = {
   getDepartments,

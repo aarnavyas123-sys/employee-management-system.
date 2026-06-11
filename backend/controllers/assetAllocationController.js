@@ -62,6 +62,13 @@ const allocateAsset = async (req, res) => {
       [asset_id, allocated_by],
     );
 
+    // Fetch target user_id for the notification
+    const empProfile = await pool.query(
+      "SELECT user_id FROM employee_profiles WHERE id = $1",
+      [employee_id]
+    );
+    const targetUserId = empProfile.rows[0]?.user_id || null;
+
     // Notification
     await pool.query(
       `
@@ -82,7 +89,7 @@ const allocateAsset = async (req, res) => {
         CURRENT_TIMESTAMP
       )
       `,
-      [employee_id],
+      [targetUserId],
     );
 
     // Audit Log
