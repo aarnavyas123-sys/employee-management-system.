@@ -5,8 +5,13 @@ import API from "../services/api";
 import { toast } from "react-toastify";
 
 function LeaveApplication() {
+  const role = localStorage.getItem("role");
+  const currentUserName = localStorage.getItem("name");
+
   const [employees, setEmployees] = useState([]);
   const [leaveTypes, setLeaveTypes] = useState([]);
+  const [isLoadingProfile, setIsLoadingProfile] = useState(role === "Employee");
+  const [profileError, setProfileError] = useState(null);
 
   const [form, setForm] = useState({
     employee_id: "",
@@ -18,7 +23,7 @@ function LeaveApplication() {
   });
 
   useEffect(() => {
-    fetchEmployees();
+    fetchEmployeesAndProfile();
     fetchLeaveTypes();
   }, []);
 
@@ -35,16 +40,47 @@ function LeaveApplication() {
           ...prev,
           total_days: diffDays,
         }));
+      } else {
+        setForm((prev) => ({
+          ...prev,
+          total_days: 0,
+        }));
       }
     }
   }, [form.from_date, form.to_date]);
 
-  const fetchEmployees = async () => {
+  const fetchEmployeesAndProfile = async () => {
     try {
-      const res = await API.get("/employees");
-      setEmployees(res.data);
+      if (role === "Employee") {
+        setIsLoadingProfile(true);
+        setProfileError(null);
+        const res = await API.get(`/employees/profile/${encodeURIComponent(currentUserName)}`);
+        if (res.data && res.data.id) {
+          setEmployees([res.data]);
+          setForm((prev) => ({
+            ...prev,
+            employee_id: res.data.id,
+          }));
+        } else {
+          setProfileError("Profile not found.");
+          toast.error("Employee profile not found. Please contact HR to create your profile.");
+        }
+      } else {
+        const res = await API.get("/employees");
+        // Safe check for paginated response
+        const employeeList = res.data.employees || (Array.isArray(res.data) ? res.data : []);
+        setEmployees(employeeList);
+      }
     } catch (error) {
-      console.log(error);
+      console.error("Error loading employees/profile:", error);
+      if (role === "Employee") {
+        setProfileError("Failed to load employee profile.");
+        toast.error("Failed to load your profile. Please make sure your HR has set up your employee record.");
+      } else {
+        toast.error("Failed to load employees list.");
+      }
+    } finally {
+      setIsLoadingProfile(false);
     }
   };
 
@@ -53,7 +89,8 @@ function LeaveApplication() {
       const res = await API.get("/leave-types");
       setLeaveTypes(res.data);
     } catch (error) {
-      console.log(error);
+      console.error("Error fetching leave types:", error);
+      toast.error("Failed to load leave types.");
     }
   };
 
@@ -67,13 +104,18 @@ function LeaveApplication() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!form.employee_id) {
+      toast.error("Employee profile is required to apply for leave.");
+      return;
+    }
+
     try {
       await API.post("/leaves", form);
 
       toast.success("Leave Applied Successfully ✅");
 
       setForm({
-        employee_id: "",
+        employee_id: role === "Employee" ? form.employee_id : "",
         leave_type_id: "",
         from_date: "",
         to_date: "",
@@ -81,8 +123,9 @@ function LeaveApplication() {
         reason: "",
       });
     } catch (error) {
-      console.log(error);
-      toast.error("Failed to Apply Leave");
+      console.error("Error applying leave:", error);
+      const errMsg = error.response?.data?.message || "Failed to Apply Leave";
+      toast.error(errMsg);
     }
   };
 
@@ -94,7 +137,6 @@ function LeaveApplication() {
         <Topbar />
 
         {/* Header */}
-
         <div className="card p-4 shadow-sm mb-4">
           <h2 className="fw-bold text-primary">Leave Application</h2>
           <p className="text-muted mb-0">
@@ -103,140 +145,173 @@ function LeaveApplication() {
         </div>
 
         {/* Summary Cards */}
-
         <div className="row mb-4">
           <div className="col-md-4">
             <div className="card p-3 shadow-sm text-center">
-              <h6>Leave Types</h6>
-              <h2>{leaveTypes.length}</h2>
-            </div>
-          </div>
-          ```
-          <div className="col-md-4">
-            <div className="card p-3 shadow-sm text-center">
-              <h6>Total Leave Days</h6>
-              <h2>{form.total_days || 0}</h2>
+              <h6 className="text-muted">Leave Types Available</h6>
+              <h2 className="text-primary">{leaveTypes.length}</h2>
             </div>
           </div>
           <div className="col-md-4">
             <div className="card p-3 shadow-sm text-center">
-              <h6>Status</h6>
-              <h2 className="text-warning">Pending</h2>
+              <h6 className="text-muted">Total Leave Days</h6>
+              <h2 className="text-info">{form.total_days || 0}</h2>
             </div>
           </div>
-          ```
+          <div className="col-md-4">
+            <div className="card p-3 shadow-sm text-center">
+              <h6 className="text-muted">Status</h6>
+              <h2 className="text-warning">Pending Approval</h2>
+            </div>
+          </div>
         </div>
 
         <div className="row">
           {/* Form */}
           <div className="col-md-8">
             <div className="card p-4 shadow-sm">
-              <h4 className="mb-4">Apply for Leave</h4>
-              ```
-              <form onSubmit={handleSubmit}>
-                <select
-                  className="form-control mb-3"
-                  name="employee_id"
-                  value={form.employee_id}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">Select Employee</option>
+              <h4 className="mb-4 text-secondary">Apply for Leave</h4>
+              
+              {isLoadingProfile ? (
+                <div className="text-center py-4">
+                  <div className="spinner-border text-primary" role="status">
+                    <span className="visually-hidden">Loading Profile...</span>
+                  </div>
+                  <p className="mt-2 text-muted">Retrieving employee record...</p>
+                </div>
+              ) : profileError ? (
+                <div className="alert alert-danger py-3">
+                  <h5 className="alert-heading">⚠️ Profile Setup Required</h5>
+                  <p className="mb-0">
+                    We could not locate an Employee Profile for user account <strong>{currentUserName}</strong>.
+                    Please ask your system Admin or HR to create your Employee Profile containing your department, designation, and salary information before you can submit leave requests.
+                  </p>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit}>
+                  {role === "Employee" ? (
+                    <div className="mb-3">
+                      <label className="form-label fw-bold">Employee Name</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={employees[0]?.name || currentUserName}
+                        disabled
+                      />
+                    </div>
+                  ) : (
+                    <div className="mb-3">
+                      <label className="form-label fw-bold">Select Employee</label>
+                      <select
+                        className="form-control"
+                        name="employee_id"
+                        value={form.employee_id}
+                        onChange={handleChange}
+                        required
+                      >
+                        <option value="">Select Employee</option>
+                        {employees.map((emp) => (
+                          <option key={emp.id} value={emp.id}>
+                            {emp.name} ({emp.designation || "No Designation"})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
 
-                  {employees.map((emp) => (
-                    <option key={emp.id} value={emp.id}>
-                      {emp.name}
-                    </option>
-                  ))}
-                </select>
+                  <div className="mb-3">
+                    <label className="form-label fw-bold">Select Leave Type</label>
+                    <select
+                      className="form-control"
+                      name="leave_type_id"
+                      value={form.leave_type_id}
+                      onChange={handleChange}
+                      required
+                    >
+                      <option value="">Select Leave Type</option>
+                      {leaveTypes.map((leave) => (
+                        <option key={leave.id} value={leave.id}>
+                          {leave.leave_name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
 
-                <select
-                  className="form-control mb-3"
-                  name="leave_type_id"
-                  value={form.leave_type_id}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">Select Leave Type</option>
+                  <div className="row">
+                    <div className="col-md-6">
+                      <label className="form-label fw-bold">From Date</label>
+                      <input
+                        type="date"
+                        className="form-control mb-3"
+                        name="from_date"
+                        value={form.from_date}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
 
-                  {leaveTypes.map((leave) => (
-                    <option key={leave.id} value={leave.id}>
-                      {leave.leave_name}
-                    </option>
-                  ))}
-                </select>
+                    <div className="col-md-6">
+                      <label className="form-label fw-bold">To Date</label>
+                      <input
+                        type="date"
+                        className="form-control mb-3"
+                        name="to_date"
+                        value={form.to_date}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+                  </div>
 
-                <div className="row">
-                  <div className="col-md-6">
-                    <label className="form-label fw-bold">From Date</label>
+                  <div className="alert alert-info">
+                    <strong>Total Calculated Leave Days:</strong> {form.total_days || 0}
+                  </div>
 
-                    <input
-                      type="date"
-                      className="form-control mb-3"
-                      name="from_date"
-                      value={form.from_date}
+                  <div className="mb-3">
+                    <label className="form-label fw-bold">Reason for Leave</label>
+                    <textarea
+                      className="form-control"
+                      rows="4"
+                      placeholder="Please specify a clear reason for applying..."
+                      name="reason"
+                      value={form.reason}
                       onChange={handleChange}
                       required
                     />
                   </div>
 
-                  <div className="col-md-6">
-                    <label className="form-label fw-bold">To Date</label>
-
-                    <input
-                      type="date"
-                      className="form-control mb-3"
-                      name="to_date"
-                      value={form.to_date}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="alert alert-info">
-                  <strong>Total Leave Days:</strong> {form.total_days || 0}
-                </div>
-
-                <textarea
-                  className="form-control mb-3"
-                  rows="4"
-                  placeholder="Reason for Leave"
-                  name="reason"
-                  value={form.reason}
-                  onChange={handleChange}
-                  required
-                />
-
-                <button type="submit" className="btn btn-primary px-4">
-                  🚀 Submit Leave Request
-                </button>
-              </form>
+                  <button 
+                    type="submit" 
+                    className="btn btn-primary px-4 fw-bold"
+                    disabled={!form.employee_id}
+                  >
+                    🚀 Submit Leave Request
+                  </button>
+                </form>
+              )}
             </div>
           </div>
+
           {/* Right Panel */}
           <div className="col-md-4">
-            <div className="card p-4 shadow-sm">
-              <h5>Leave Guidelines</h5>
-
-              <ul className="mt-3">
-                <li>Apply leave in advance.</li>
-                <li>Manager approval required.</li>
-                <li>HR approval required for final approval.</li>
-                <li>Provide valid reason.</li>
-                <li>Emergency leaves require notification.</li>
+            <div className="card p-4 shadow-sm mb-3">
+              <h5 className="border-bottom pb-2">📋 Leave Guidelines</h5>
+              <ul className="mt-3 ps-3">
+                <li className="mb-2">Apply for leaves in advance to allow time for approval.</li>
+                <li className="mb-2">Leaves must be approved by your reporting Manager.</li>
+                <li className="mb-2">HR performs final approval and leave deduction.</li>
+                <li className="mb-2">Ensure your reason is descriptive and valid.</li>
+                <li>Emergency leaves require instant notify to your supervisor.</li>
               </ul>
             </div>
 
-            <div className="card p-4 shadow-sm mt-3">
-              <h5>Quick Tips</h5>
-
-              <p className="text-muted">
-                Double-check your dates before submitting your request.
+            <div className="card p-4 shadow-sm text-bg-light">
+              <h5 className="fw-bold text-dark">💡 Quick Tips</h5>
+              <p className="text-muted mb-0 small">
+                Verify that your From Date is before or equal to your To Date. The system automatically computes the total days requested.
               </p>
             </div>
           </div>
-          ```
         </div>
       </div>
     </>
