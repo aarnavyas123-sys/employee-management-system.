@@ -21,6 +21,7 @@ import ResetPassword from "./pages/ResetPassword";
 import AuditLogs from "./pages/AuditLogs";
 import Users from "./pages/Users";
 import Attendance from "./pages/Attendance";
+import MyLeaves from "./pages/MyLeaves";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -139,6 +140,15 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["Employee"]}>
               <Profile />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/my-leaves"
+          element={
+            <ProtectedRoute allowedRoles={["Employee"]}>
+              <MyLeaves />
             </ProtectedRoute>
           }
         />

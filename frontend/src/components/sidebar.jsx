@@ -219,6 +219,14 @@ function Sidebar() {
             </li>
 
             <li
+              className={isActive("/my-leaves")}
+              onClick={() => navigate("/my-leaves")}
+            >
+              <FaHistory />
+              My Leaves
+            </li>
+
+            <li
               className={isActive("/leave-application")}
               onClick={() => navigate("/leave-application")}
             >
