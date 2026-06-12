@@ -30,7 +30,7 @@ function EditEmployee() {
       const res = await API.get("/departments");
       setDepartments(res.data);
     } catch (error) {
-      console.log(error);
+      // Failed to load departments
     }
   };
 
@@ -47,7 +47,6 @@ function EditEmployee() {
         salary: res.data.salary || "",
       });
     } catch (error) {
-      console.log(error);
       toast.error("Failed to Load Employee");
     }
   };
@@ -69,7 +68,6 @@ function EditEmployee() {
 
       navigate("/employees");
     } catch (error) {
-      console.log(error);
       toast.error("Failed to Update Employee");
     }
   };

@@ -1,11 +1,11 @@
 const pool = require("../config/db");
 const crypto = require("crypto");
 const bcrypt = require("bcrypt");
+const logger = require("../config/logger");
 
 const forgotPassword = async (req, res) => {
   try {
-    console.log("Forgot Password Called");
-    console.log(req.body);
+    logger.info("Forgot Password Called");
 
     const { email } = req.body;
 
@@ -31,7 +31,7 @@ const forgotPassword = async (req, res) => {
       token,
     });
   } catch (error) {
-    console.log(error);
+    logger.error(`Forgot Password Error: ${error.message}`);
     res.status(500).json({
       message: error.message,
     });
@@ -67,7 +67,7 @@ const resetPassword = async (req, res) => {
       message: "Password Reset Successfully",
     });
   } catch (error) {
-    console.log(error);
+    logger.error(`Reset Password Error: ${error.message}`);
     res.status(500).json({
       message: error.message,
     });

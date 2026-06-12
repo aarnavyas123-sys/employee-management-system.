@@ -1,4 +1,5 @@
 const pool = require("../config/db");
+const logger = require("../config/logger");
 
 const getDashboardStats = async (req, res) => {
   try {
@@ -32,7 +33,7 @@ const getDashboardStats = async (req, res) => {
       totalImages: 0,
     });
   } catch (error) {
-    console.log(error);
+    logger.error(`Dashboard Stats Error: ${error.message}`);
 
     res.status(500).json({
       message: error.message,
@@ -54,7 +55,7 @@ const getDepartmentChart = async (req, res) => {
 
     res.json(result.rows);
   } catch (error) {
-    console.log(error);
+    logger.error(`Department Chart Error: ${error.message}`);
 
     res.status(500).json({
       message: error.message,
@@ -73,7 +74,7 @@ const getLeaveStatusChart = async (req, res) => {
 
     res.json(result.rows);
   } catch (error) {
-    console.log(error);
+    logger.error(`Leave Status Chart Error: ${error.message}`);
 
     res.status(500).json({
       message: error.message,
@@ -92,6 +93,7 @@ const getAssetChart = async (req, res) => {
 
     res.json(result.rows);
   } catch (error) {
+    logger.error(`Asset Chart Error: ${error.message}`);
     res.status(500).json({
       message: error.message,
     });

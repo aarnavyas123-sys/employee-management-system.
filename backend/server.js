@@ -28,7 +28,25 @@ const emailRoutes = require("./routes/emailRoutes");
 const attendanceRoutes = require("./routes/attendanceRoutes");
 const app = express();
 
-app.use(cors());
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  "https://employee-management-system.vercel.app",
+  "https://employee-management.vercel.app",
+  "http://localhost:5173"
+].filter(Boolean);
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error(`Origin ${origin} not allowed by CORS`));
+      }
+    },
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
@@ -48,6 +66,7 @@ app.use("/api/v1/export", exportRoutes);
 app.use("/api/v1/reports", reportRoutes);
 app.use("/api/v1/notifications", notificationRoutes);
 app.use("/api/v1/health", healthRoutes);
+app.use("/api/health", healthRoutes); // Fallback for standard checks
 app.use("/api/v1/views", viewRoutes);
 app.use("/api/v1/email", emailRoutes);
 app.use("/api/v1/audit-logs", auditRoutes);

@@ -15,7 +15,7 @@ function Notifications() {
       const res = await API.get("/notifications");
       setNotifications(res.data);
     } catch (error) {
-      console.log(error);
+      // Failed to load notifications silently or handle
     }
   };
 

@@ -123,8 +123,8 @@ CREATE TABLE notification_recipients (
 CREATE TABLE audit_logs (
   id SERIAL PRIMARY KEY,
   user_id INT REFERENCES users(id) ON DELETE SET NULL,
-  action_type VARCHAR(100) NOT NULL,
-  action_details TEXT NOT NULL,
+  action VARCHAR(100) NOT NULL,
+  details TEXT NOT NULL,
   ip_address VARCHAR(45),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

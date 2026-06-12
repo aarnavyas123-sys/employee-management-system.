@@ -26,7 +26,7 @@ function AddEmployee() {
       const res = await API.get("/departments");
       setDepartments(res.data);
     } catch (error) {
-      console.log(error);
+      // Failed to load departments
     }
   };
 
@@ -64,7 +64,6 @@ function AddEmployee() {
         salary: "",
       });
     } catch (error) {
-      console.log(error);
       toast.error("Failed to Add Employee");
     }
   };

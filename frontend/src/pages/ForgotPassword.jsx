@@ -20,7 +20,6 @@ function ForgotPassword() {
 
       navigate(`/reset-password?token=${res.data.token}`);
     } catch (error) {
-      console.log(error.response?.data);
       toast.error(error.response?.data?.message || "Failed to Generate Token");
     }
   };

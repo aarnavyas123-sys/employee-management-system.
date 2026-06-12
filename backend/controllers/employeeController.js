@@ -1,6 +1,7 @@
 const pool = require("../config/db");
 const cache = require("../config/cache");
 const logAction = require("../utils/auditLogger");
+const logger = require("../config/logger");
 // Create Employee
 const createEmployee = async (req, res) => {
   try {
@@ -9,9 +10,9 @@ const createEmployee = async (req, res) => {
 
     const result = await pool.query(
       `INSERT INTO employee_profiles
-      (name, department_id, phone, address, designation, salary)
-      VALUES($1,$2,$3,$4,$5,$6)
-      RETURNING *`,
+       (name, department_id, phone, address, designation, salary)
+       VALUES($1,$2,$3,$4,$5,$6)
+       RETURNING *`,
       [name, department_id, phone, address, designation, salary],
     );
     await logAction(
@@ -23,7 +24,7 @@ const createEmployee = async (req, res) => {
 
     res.status(201).json(result.rows[0]);
   } catch (error) {
-    console.log(error);
+    logger.error(`Create Employee Error: ${error.message}`);
 
     res.status(500).json({
       message: error.message,
@@ -65,7 +66,7 @@ const updateEmployee = async (req, res) => {
       employee: result.rows[0],
     });
   } catch (error) {
-    console.log(error);
+    logger.error(`Update Employee Error: ${error.message}`);
 
     res.status(500).json({
       message: error.message,
@@ -102,7 +103,7 @@ const getEmployees = async (req, res) => {
       orderBy = "ep.salary DESC";
     }
 
-    console.log("Fetching From Database");
+    logger.info("Fetching Employees From Database");
 
     const employees = await pool.query(
       `

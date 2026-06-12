@@ -1,13 +1,14 @@
 const cron = require("node-cron");
 const pool = require("../config/db");
 const logAction = require("../utils/auditLogger");
+const logger = require("../config/logger");
 
 const startLeaveReminderJob = () => {
-  console.log("✅ Leave Reminder Job Started");
+  logger.info("✅ Leave Reminder Job Started");
 
   cron.schedule("*/30 * * * * *", async () => {
     try {
-      console.log("🔄 Running Leave Reminder Job");
+      logger.info("🔄 Running Leave Reminder Job");
 
       const result = await pool.query(`
         SELECT COUNT(*) AS pending_count
@@ -17,7 +18,7 @@ const startLeaveReminderJob = () => {
 
       const pendingCount = Number(result.rows[0].pending_count);
 
-      console.log(`📌 Pending Leave Requests: ${pendingCount}`);
+      logger.info(`📌 Pending Leave Requests: ${pendingCount}`);
 
       if (pendingCount > 0) {
         // Notification
@@ -39,11 +40,11 @@ const startLeaveReminderJob = () => {
           `${pendingCount} pending leave requests checked`,
         );
 
-        console.log("✅ Notification Created");
-        console.log("✅ Audit Log Created");
+        logger.info("✅ Notification Created");
+        logger.info("✅ Audit Log Created");
       }
     } catch (error) {
-      console.error("Cron Job Error:", error.message);
+      logger.error(`Cron Job Error: ${error.message}`);
     }
   });
 };

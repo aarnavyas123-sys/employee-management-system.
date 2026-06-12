@@ -18,7 +18,7 @@ function EmployeeDetails() {
       const res = await API.get(`/employees/${id}`);
       setEmployee(res.data);
     } catch (error) {
-      console.log(error);
+      // Failed to load employee details silently or handle
     }
   };
 

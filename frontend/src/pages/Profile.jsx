@@ -21,7 +21,6 @@ function Profile() {
 
       setEmployee(res.data);
     } catch (error) {
-      console.log(error);
       toast.error("Failed to Load Profile");
     }
   };
