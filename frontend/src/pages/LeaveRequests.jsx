@@ -17,7 +17,7 @@ function LeaveRequests() {
       const res = await API.get("/leaves");
       setLeaves(res.data);
     } catch (error) {
-      console.log(error);
+      // Failed to load leaves silently or handle
     }
   };
 

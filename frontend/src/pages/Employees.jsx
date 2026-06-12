@@ -20,7 +20,6 @@ function Employees() {
 
       setEmployees(res.data.employees);
     } catch (error) {
-      console.log(error);
       toast.error("Failed to Fetch Employees");
     }
   };

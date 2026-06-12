@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enterprise Employee Management System (EMS) - Project Documentation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #1677ff;
+      --primary-hover: #0958d9;
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --code-bg: #0f172a;
+      --code-text: #f8fafc;
+      --method-get: #10b981;
+      --method-post: #3b82f6;
+      --method-put: #f59e0b;
+      --method-delete: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      line-height: 1.6;
+      display: flex;
+    }
+
+    /* Sidebar Navigation */
+    .sidebar {
+      width: 280px;
+      height: 100vh;
+      position: fixed;
+      left: 0;
+      top: 0;
+      background-color: #0f172a;
+      color: #ffffff;
+      padding: 2rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      overflow-y: auto;
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .sidebar h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.05em;
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .sidebar-menu {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .sidebar-menu a {
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      display: block;
+      transition: all 0.2s ease;
+    }
+
+    .sidebar-menu a:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+      color: #ffffff;
+    }
+
+    .sidebar-menu a.active {
+      background-color: var(--primary-color);
+      color: #ffffff;
+    }
+
+    /* Main Content Area */
+    .content {
+      margin-left: 280px;
+      flex: 1;
+      padding: 3rem 4rem;
+      max-width: 1100px;
+    }
+
+    .header-banner {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #ffffff;
+      padding: 3rem;
+      border-radius: 20px;
+      margin-bottom: 3rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header-banner::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(22, 119, 255, 0.15) 0%, transparent 60%);
+      border-radius: 50%;
+    }
+
+    .header-banner h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+
+    .header-banner p {
+      font-size: 1.1rem;
+      color: #94a3b8;
+      max-width: 600px;
+    }
+
+    .developer-tag {
+      display: inline-block;
+      background-color: rgba(22, 119, 255, 0.1);
+      border: 1px solid rgba(22, 119, 255, 0.2);
+      color: var(--primary-color);
+      font-weight: 600;
+      font-size: 0.85rem;
+      padding: 0.4rem 1rem;
+      border-radius: 50px;
+      margin-top: 1.5rem;
+    }
+
+    /* Sections */
+    section {
+      margin-bottom: 4rem;
+      scroll-margin-top: 2rem;
+    }
+
+    h2.section-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.5rem;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      border-left: 5px solid var(--primary-color);
+      padding-left: 0.75rem;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.01);
+      margin-bottom: 1.5rem;
+    }
+
+    .card h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: #0f172a;
+    }
+
+    p {
+      margin-bottom: 1rem;
+      color: #475569;
+    }
+
+    /* Tech Stack Grid */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .grid-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .grid-card h4 {
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+
+    .grid-card ul {
+      list-style-position: inside;
+      color: #475569;
+      font-size: 0.95rem;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    .badge-get { background-color: rgba(16, 185, 129, 0.1); color: var(--method-get); }
+    .badge-post { background-color: rgba(59, 130, 246, 0.1); color: var(--method-post); }
+    .badge-put { background-color: rgba(245, 158, 11, 0.1); color: var(--method-put); }
+    .badge-delete { background-color: rgba(239, 68, 68, 0.1); color: var(--method-delete); }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-size: 0.95rem;
+    }
+
+    th, td {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    th {
+      background-color: #f1f5f9;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    /* Code Block */
+    pre {
+      background-color: var(--code-bg);
+      color: var(--code-text);
+      padding: 1.25rem;
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      overflow-x: auto;
+      margin: 1rem 0;
+    }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      background-color: #f1f5f9;
+      color: var(--primary-color);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+
+    pre code {
+      background-color: transparent;
+      color: inherit;
+      padding: 0;
+    }
+
+    /* Deployment Links Card */
+    .links-card {
+      background: linear-gradient(135deg, rgba(22, 119, 255, 0.05) 0%, rgba(22, 119, 255, 0) 100%);
+      border: 1px solid rgba(22, 119, 255, 0.15);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .link-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 0;
+      border-bottom: 1px dashed var(--border-color);
+    }
+
+    .link-row:last-child {
+      border-bottom: none;
+    }
+
+    .link-row a {
+      color: var(--primary-color);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .link-row a:hover {
+      text-decoration: underline;
+    }
+
+    /* Print Styles */
+    @media print {
+      body {
+        background-color: #ffffff;
+        color: #000000;
+      }
+      .sidebar {
+        display: none;
+      }
+      .content {
+        margin-left: 0;
+        padding: 0;
+        max-width: 100%;
+      }
+      .header-banner {
+        border: 1px solid #000000;
+        color: #000000;
+        background: none;
+        padding: 1.5rem;
+        box-shadow: none;
+      }
+      .header-banner p {
+        color: #000000;
+      }
+      .card {
+        border: 1px solid #000000;
+        box-shadow: none;
+        page-break-inside: avoid;
+      }
+      .section-title {
+        border-left: 5px solid #000000;
+      }
+      .page-break {
+        page-break-after: always;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <h2>🏢 EMS Portal</h2>
+    <ul class="sidebar-menu">
+      <li><a href="#overview" class="active">1. Overview</a></li>
+      <li><a href="#architecture">2. Architecture</a></li>
+      <li><a href="#database">3. Database Design</a></li>
+      <li><a href="#modules">4. Modules Setup</a></li>
+      <li><a href="#api">5. API Documentation</a></li>
+      <li><a href="#deployment">6. Deployment Links</a></li>
+      <li><a href="#enhancements">7. Future Features</a></li>
+    </ul>
+  </aside>
+
+  <!-- Content -->
+  <main class="content">
+    
+    <!-- Banner -->
+    <div class="header-banner">
+      <h1>Enterprise Employee Management System (EMS)</h1>
+      <p>A comprehensive full-stack solution built with React, Express, and PostgreSQL designed to manage enterprise human resource operations, attendance workflows, and assets.</p>
+      <span class="developer-tag">Prepared by: Aarna Vyas</span>
+    </div>
+
+    <!-- Section 1: Overview -->
+    <section id="overview" class="page-break">
+      <h2 class="section-title">1. Project Overview & Features</h2>
+      <div class="card">
+        <h3>General Summary</h3>
+        <p>The Enterprise Employee Management System (EMS) is a production-ready Web Application designed to streamline corporate workflows, attendance tracking, hierarchical leave request signing, and organizational inventory audits.</p>
+        <p>By enforcing Role-Based Access Control (RBAC), the platform ensures users get access to exactly what their profile defines, protecting sensitive data such as salaries and audits.</p>
+      </div>
+
+      <div class="grid">
+        <div class="grid-card">
+          <h4>🔐 Multi-Role RBAC</h4>
+          <p>Delineates control sets across Admin, HR, Manager, and standard Employee roles.</p>
+        </div>
+        <div class="grid-card">
+          <h4>📅 Attendance System</h4>
+          <p>Punch-in tracking with dynamic detection of late arrivals (>09:00 AM) and shift computations.</p>
+        </div>
+        <div class="grid-card">
+          <h4>📝 Leave Approval</h4>
+          <p>Hierarchical leaves workflow (Employee -> Manager Approve -> HR Confirm -> Balance updates).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Architecture -->
+    <section id="architecture" class="page-break">
+      <h2 class="section-title">2. Architecture & Tech Stack</h2>
+      <div class="grid">
+        <div class="grid-card">
+          <h4>Frontend Client</h4>
+          <ul>
+            <li>React JS (v19) & Vite</li>
+            <li>React Router DOM (v7)</li>
+            <li>Bootstrap 5 & Vanilla CSS</li>
+            <li>Axios Network Interceptors</li>
+            <li>Recharts for Analytics</li>
+          </ul>
+        </div>
+        <div class="grid-card">
+          <h4>Backend Server</h4>
+          <ul>
+            <li>Express Node.js REST API</li>
+            <li>PostgreSQL Engine</li>
+            <li>Winston Audit Logging</li>
+            <li>JWT & bcrypt Cryptography</li>
+            <li>Node Cron Reminders</li>
+          </ul>
+        </div>
+        <div class="grid-card">
+          <h4>Infrastructure</h4>
+          <ul>
+            <li>Docker & Docker Compose</li>
+            <li>Vercel SPA Routing</li>
+            <li>Render Web Services</li>
+            <li>Neon DB Server (SSL Config)</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Database Design -->
+    <section id="database" class="page-break">
+      <h2 class="section-title">3. Database Schema Design</h2>
+      <div class="card">
+        <h3>Relational Database Structure</h3>
+        <p>Designed on PostgreSQL to enforce foreign key mappings, cascading deletes, and optimize search filters via named indices.</p>
+        
+        <table>
+          <thead>
+            <tr>
+              <th>Table Name</th>
+              <th>Description</th>
+              <th>Key Columns</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>users</code></td>
+              <td>Credentials, passwords, active status, roles</td>
+              <td><code>id</code> (PK), <code>email</code> (Unique), <code>password</code>, <code>role</code>, <code>status</code></td>
+            </tr>
+            <tr>
+              <td><code>departments</code></td>
+              <td>Organizational division mappings</td>
+              <td><code>id</code> (PK), <code>department_name</code> (Unique), <code>manager_id</code> (FK)</td>
+            </tr>
+            <tr>
+              <td><code>employee_profiles</code></td>
+              <td>Core profile data linking to users table</td>
+              <td><code>id</code> (PK), <code>user_id</code> (FK), <code>name</code>, <code>salary</code>, <code>remaining_leaves</code></td>
+            </tr>
+            <tr>
+              <td><code>leave_requests</code></td>
+              <td>Hierarchical leave request storage</td>
+              <td><code>id</code> (PK), <code>employee_id</code> (FK), <code>status</code>, <code>total_days</code>, <code>from_date</code></td>
+            </tr>
+            <tr>
+              <td><code>attendance</code></td>
+              <td>Daily clock-in/out attendance logs</td>
+              <td><code>id</code> (PK), <code>employee_id</code> (FK), <code>clock_in</code>, <code>clock_out</code>, <code>status</code></td>
+            </tr>
+            <tr>
+              <td><code>assets</code></td>
+              <td>Company inventories and equipment catalogs</td>
+              <td><code>id</code> (PK), <code>asset_name</code>, <code>serial_number</code> (Unique), <code>status</code></td>
+            </tr>
+            <tr>
+              <td><code>audit_logs</code></td>
+              <td>Security logs tracking crucial adjustments</td>
+              <td><code>id</code> (PK), <code>user_id</code> (FK), <code>action</code>, <code>details</code>, <code>created_at</code></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Optimization Indexes Implemented</h3>
+        <pre><code>-- High search optimization indexes
+CREATE INDEX idx_employee_name ON employee_profiles(name);
+CREATE INDEX idx_employee_department ON employee_profiles(department_id);
+CREATE INDEX idx_department_name ON departments(department_name);</code></pre>
+      </div>
+    </section>
+
+    <!-- Section 4: Modules Setup -->
+    <section id="modules" class="page-break">
+      <h2 class="section-title">4. Core Module Setup</h2>
+      <div class="card">
+        <h3>1. Authentication & Security Guardrails</h3>
+        <p>Passcodes are salted using <code>bcrypt</code> and transmitted securely. Requests carry custom JSON Web Tokens (JWT) verified before route handling.</p>
+      </div>
+      <div class="card">
+        <h3>2. Attendance tracking</h3>
+        <p>An automated clock-in tracker computes check-in hours. Incurs a "Late" status if punched after 09:00 AM.</p>
+      </div>
+      <div class="card">
+        <h3>3. Leave Request Workflow</h3>
+        <p>A multi-stage signature workflow allowing employee request, manager pre-approval, and final HR sign-off. The leave balance is adjusted upon HR approval.</p>
+      </div>
+    </section>
+
+    <!-- Section 5: API Documentation -->
+    <section id="api" class="page-break">
+      <h2 class="section-title">5. Core API References</h2>
+      <div class="card">
+        <h3>Public & Protected Routes Mapping (Prefix: <code>/api/v1</code>)</h3>
+        
+        <table>
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>Endpoint Path</th>
+              <th>Access Role</th>
+              <th>Action Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="badge badge-post">POST</span></td>
+              <td><code>/auth/login</code></td>
+              <td>Public</td>
+              <td>Verify login and return JWT token</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-post">POST</span></td>
+              <td><code>/auth/signup</code></td>
+              <td>Public</td>
+              <td>Register a basic employee user profile</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-get">GET</span></td>
+              <td><code>/employees</code></td>
+              <td>Admin, HR, Manager</td>
+              <td>Fetch list of employee profiles</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-post">POST</span></td>
+              <td><code>/attendance/clock-in</code></td>
+              <td>Employee</td>
+              <td>Punch check-in and calculate late flag</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-put">PUT</span></td>
+              <td><code>/leaves/approve/:id</code></td>
+              <td>Manager</td>
+              <td>Manager pre-approval level check</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-put">PUT</span></td>
+              <td><code>/leaves/hr-approve/:id</code></td>
+              <td>HR</td>
+              <td>Confirm HR signoff and update leave days balance</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-get">GET</span></td>
+              <td><code>/audit-logs</code></td>
+              <td>Admin Only</td>
+              <td>Admin compliance audit details search</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-get">GET</span></td>
+              <td><code>/health</code></td>
+              <td>Public</td>
+              <td>API Health check test route (UP/DOWN)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Section 6: Deployment Links -->
+    <section id="deployment" class="page-break">
+      <h2 class="section-title">6. Production Deployment Links</h2>
+      <div class="links-card">
+        <h3>Live Project Resources</h3>
+        <p>All core modules are live in cloud settings. Use the following references:</p>
+        
+        <div class="link-row">
+          <strong>GitHub Repository</strong>
+          <a href="https://github.com/aarnavyas123-sys/employee-management-system" target="_blank">Repository Source Code</a>
+        </div>
+        <div class="link-row">
+          <strong>Live Web Client (Frontend)</strong>
+          <a href="https://employee-management-system.vercel.app" target="_blank">employee-management-system.vercel.app</a>
+        </div>
+        <div class="link-row">
+          <strong>Backend Gateway API</strong>
+          <a href="https://employee-management-backend.onrender.com" target="_blank">employee-management-backend.onrender.com</a>
+        </div>
+        <div class="link-row">
+          <strong>Health Endpoint Check</strong>
+          <a href="https://employee-management-backend.onrender.com/api/health" target="_blank">health status UP check</a>
+        </div>
+        <div class="link-row">
+          <strong>Database Status</strong>
+          <span>Neon Postgres DB - Online (SSL Mode Enabled)</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 7: Future Features -->
+    <section id="enhancements">
+      <h2 class="section-title">7. Future Roadmap Enhancements</h2>
+      <div class="card">
+        <h3>Next Phase Recommendations</h3>
+        <p>1. <strong>Real-time Notifications</strong>: Replace long polling in notifications with Socket.io/WebSockets.</p>
+        <p>2. <strong>Payroll Management</strong>: Automate payslip generation PDF download and direct email distributions.</p>
+        <p>3. <strong>Geo-fencing punches</strong>: Restrict attendance clock-in to specific corporate IP subnetworks or GPS parameters.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // Navigation highlight trigger
+    const sections = document.querySelectorAll('section');
+    const navLinks = document.querySelectorAll('.sidebar-menu a');
+
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.clientHeight;
+        if (pageYOffset >= (sectionTop - 150)) {
+          current = section.getAttribute('id');
+        }
+      });
+
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href').slice(1) === current) {
+          link.classList.add('active');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

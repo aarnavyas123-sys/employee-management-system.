@@ -15,7 +15,7 @@ function ApprovalHistory() {
       const res = await API.get("/leaves/history");
       setHistory(res.data);
     } catch (error) {
-      console.log(error);
+      // Failed to load history
     }
   };
 

@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EMS Project Presentation - Slides Deck</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #1677ff;
+      --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --card-bg: rgba(30, 41, 59, 0.7);
+      --border-color: rgba(255, 255, 255, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Presentation Container */
+    .deck-container {
+      position: relative;
+      width: 90%;
+      max-width: 1100px;
+      height: 80vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Individual Slide */
+    .slide {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border-color);
+      border-radius: 24px;
+      padding: 3.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      opacity: 0;
+      transform: scale(0.95);
+      pointer-events: none;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .slide.active {
+      opacity: 1;
+      transform: scale(1);
+      pointer-events: auto;
+    }
+
+    /* Slide Header */
+    .slide-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding-bottom: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .slide-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .slide-title span.number {
+      color: var(--primary-color);
+      font-weight: 400;
+      font-size: 1.5rem;
+    }
+
+    .slide-logo {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--primary-color);
+      letter-spacing: -0.05em;
+    }
+
+    /* Slide Content */
+    .slide-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 1.5rem;
+    }
+
+    .slide h3 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--primary-color);
+    }
+
+    p.lead {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Grid Layouts */
+    .slide-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .grid-box {
+      background: rgba(15, 23, 42, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      padding: 1.5rem;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .grid-box h4 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .grid-box ul {
+      list-style-position: inside;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    /* Footer / Navigation Controls */
+    .controls {
+      position: fixed;
+      bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 90%;
+      max-width: 1100px;
+      padding: 0 1rem;
+    }
+
+    .control-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      padding: 0.75rem 1.5rem;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      font-family: inherit;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .control-btn:hover {
+      background: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+
+    .control-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      background: rgba(255, 255, 255, 0.02);
+      border-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .progress-container {
+      flex: 1;
+      margin: 0 2rem;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: var(--primary-color);
+      width: 10%;
+      transition: width 0.3s ease;
+    }
+
+    .slide-counter {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Cover Slide Styling */
+    .cover-layout {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 1.5rem;
+      height: 100%;
+    }
+
+    .cover-layout h1 {
+      font-size: 3.5rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1.1;
+      background: linear-gradient(to right, #ffffff, #94a3b8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .cover-layout h2 {
+      font-size: 1.5rem;
+      color: var(--primary-color);
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .cover-layout .meta {
+      margin-top: 2rem;
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .cover-layout .meta strong {
+      color: #ffffff;
+    }
+
+    /* List styling */
+    ul.bullets {
+      list-style-type: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    ul.bullets li {
+      position: relative;
+      padding-left: 1.5rem;
+      font-size: 1.15rem;
+      color: var(--text-muted);
+    }
+
+    ul.bullets li::before {
+      content: '✦';
+      position: absolute;
+      left: 0;
+      color: var(--primary-color);
+    }
+
+    /* Tables & Code */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    th, td {
+      padding: 0.5rem 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    th {
+      color: #ffffff;
+      font-weight: 600;
+    }
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(22, 119, 255, 0.1);
+      color: var(--primary-color);
+      padding: 0.1rem 0.3rem;
+      border-radius: 4px;
+    }
+
+    /* Print Styles */
+    @media print {
+      body {
+        background: #ffffff;
+        color: #000000;
+        overflow: visible;
+        height: auto;
+      }
+      .deck-container {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      .slide {
+        position: relative;
+        opacity: 1;
+        transform: none;
+        pointer-events: auto;
+        width: 100%;
+        height: 100vh;
+        page-break-after: always;
+        background: #ffffff;
+        color: #000000;
+        border: 1px solid #000000;
+        box-shadow: none;
+        border-radius: 0;
+        padding: 2rem;
+      }
+      .slide-title, .slide h3, .slide-logo, .cover-layout h1, .cover-layout h2, .cover-layout .meta strong {
+        color: #000000 !important;
+        background: none !important;
+        -webkit-text-fill-color: initial !important;
+      }
+      .controls {
+        display: none;
+      }
+      .grid-box {
+        background: none;
+        border: 1px solid #000000;
+      }
+      .grid-box h4 {
+        color: #000000;
+      }
+      code {
+        background: none;
+        border: 1px solid #000000;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Presentation Deck -->
+  <div class="deck-container">
+
+    <!-- Slide 1: Cover Page -->
+    <div class="slide active">
+      <div class="cover-layout">
+        <h2>i-SOFTZONE Internship Capstone</h2>
+        <h1>Enterprise Employee<br>Management System</h1>
+        <div class="meta">
+          <span>Presented by: <strong>Aarna Vyas</strong></span>
+          <span>Program: <strong>Full Stack Development Capstone</strong></span>
+          <span>Mentor: <strong>i-SOFTZONE Internship Team</strong></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 2: Problem Statement -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2 class="slide-title"><span class="number">01.</span> Problem Statement</h2>
+        <span class="slide-logo">EMS Portal</span>
+      </div>
+      <div class="slide-body">
+        <p class="lead">Manual HR and directory management methods lead to operational lags, data leakage, and security risks:</p>
+        <div class="slide-grid">
+          <div class="grid-box">
+            <h4>📁 Manual Folder Tracking</h4>
+            <p>Managing employees, designations, and equipment via paper lists or spreadsheets leads to error-prone directories.</p>
+          </div>
+          <div class="grid-box">
+            <h4>⏰ Attendance Discrepancies</h4>
+            <p>No automated verification of daily clock-in timestamps, shift durations, or late status flags.</p>
+          </div>
+          <div class="grid-box">
+            <h4>💬 Approval Bottlenecks</h4>
+            <p>Leave request processing delayed by lack of hierarchical routing structures and real-time email notifications.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 3: Scope & Objectives -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2 class="slide-title"><span class="number">02.</span> Scope & Objectives</h2>
+        <span class="slide-logo">EMS Portal</span>
+      </div>
+      <div class="slide-body">
+        <p class="lead">EMS provides a unified enterprise panel ensuring operational transparency and data safety:</p>
+        <ul class="bullets">
+          <li><strong>Role-Based Access Control (RBAC)</strong>: Secure panels isolated for Admin, HR, Manager, and Employee permissions.</li>
+          <li><strong>Real-time Shift Computations</strong>: Clock-in/out attendance logging with automated late arrivals threshold checks.</li>
+          <li><strong>Two-Stage Leave Signature</strong>: Multi-level validation routing from employee request, manager pre-approval, to final HR signoff.</li>
+          <li><strong>Asset Audit Logs</strong>: Organizational inventory assignments, tracking returns, status history, and security logs.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Slide 4: System Architecture -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2 class="slide-title"><span class="number">03.</span> System Architecture</h2>
+        <span class="slide-logo">EMS Portal</span>
+      </div>
+      <div class="slide-body">
+        <div class="slide-grid">
+          <div class="grid-box">
+            <h4>Client Layer (Frontend)</h4>
+            <ul>
+              <li>Vite + React (v19) Single Page App</li>
+              <li>React Router DOM (v7)</li>
+              <li>Bootstrap 5 responsive styles</li>
+              <li>Axios Interceptor for headers</li>
+              <li>Recharts dynamic charts mapping</li>
+            </ul>
+          </div>
+          <div class="grid-box">
+            <h4>Server Layer (Backend)</h4>
+            <ul>
+              <li>Node.js + Express API Gateway</li>
+              <li>PostgreSQL DB Connection Pool</li>
+              <li>JWT validation middleware</li>
+              <li>bcrypt password salting & hash</li>
+              <li>Winston structured log levels</li>
+            </ul>
+          </div>
+          <div class="grid-box">
+            <h4>DevOps & Hosting</h4>
+            <ul>
+              <li>Vercel client SPA deployment</li>
+              <li>Render API server instances</li>
+              <li>Neon Cloud PostgreSQL Server</li>
+              <li>Docker Containerized stack setup</li>
+              <li>Cron Job approval notifications</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 5: Database Schema Design -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2 class="slide-title"><span class="number">04.</span> Database Schema Design</h2>
+        <span class="slide-logo">EMS Portal</span>
+      </div>
+      <div class="slide-body">
+        <div class="slide-grid">
+          <div class="grid-box" style="grid-column: span 2;">
+            <h4>Relational Structure (10 Core Tables)</h4>
+            <table>
+              <thead>
+                <tr>
+                  <th>Table</th>
+                  <th>Key Columns & Associations</th>
+                  <th>Index Optimization</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>users</code></td>
+                  <td><code>id</code> (PK), <code>email</code> (Unique), <code>role</code>, <code>status</code></td>
+                  <td>No index needed (Unique PK)</td>
+                </tr>
+                <tr>
+                  <td><code>employee_profiles</code></td>
+                  <td><code>id</code> (PK), <code>user_id</code> (FK), <code>department_id</code> (FK)</td>
+                  <td><code>CREATE INDEX idx_employee_name</code></td>
+                </tr>
+                <tr>
+                  <td><code>leave_requests</code></td>
+                  <td><code>id</code> (PK), <code>employee_id</code> (FK), <code>status</code>, <code>total_days</code></td>
+                  <td>FK mapping indexed</td>
+                </tr>
+                <tr>
+                  <td><code>attendance</code></td>
+                  <td><code>id</code> (PK), <code>employee_id</code> (FK), <code>date</code>, <code>clock_in</code></td>
+                  <td>Composite unique index</td>
+                </tr>
+                <tr>
+                  <td><code>audit_logs</code></td>
+                  <td><code>id</code> (PK), <code>user_id</code> (FK), <code>action</code>, <code>details</code></td>
+                  <td>Winston trace index</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="grid-box">
+            <h4>Performance Indexes</h4>
+            <p>Custom indexes are compiled on search criteria to optimize SQL filters:</p>
+            <p><code>CREATE INDEX idx_employee_name ON employee_profiles(name);</code></p>
+            <p><code>CREATE INDEX idx_department_name ON departments(department_name);</code></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 6: Key Features & Demo Flow -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2 class="slide-title"><span class="number">05.</span> Core Feature Highlights</h2>
+        <span class="slide-logo">EMS Portal</span>
+      </div>
+      <div class="slide-body">
+        <div class="slide-grid">
+          <div class="grid-box">
+            <h4>🔐 Access Control (RBAC)</h4>
+            <p>Role authorization prevents unauthorized endpoints. Admin has full dashboard edits; Employees register shift punches; Manager reviews leaves; HR completes profiles.</p>
+          </div>
+          <div class="grid-box">
+            <h4>📅 Shift Attendance Clock</h4>
+            <p>Daily entry is recorded on click. Auto-calculates late status (if check-in is past 09:00 AM) and shift hours on clock-out.</p>
+          </div>
+          <div class="grid-box">
+            <h4>📊 Security Audit Logs</h4>
+            <p>Admin exclusive security module records critical events (e.g. employee creation, deletions, role updates) with operators, status changes, and timestamp logs.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 7: Technical Enhancements -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2 class="slide-title"><span class="number">06.</span> Engineering Enhancements</h2>
+        <span class="slide-logo">EMS Portal</span>
+      </div>
+      <div class="slide-body">
+        <p class="lead">Best practices implemented for production-ready reliability:</p>
+        <div class="slide-grid">
+          <div class="grid-box">
+            <h4>🔒 Backend Guardrail Hooks</h4>
+            <p>Password hashing via <code>bcrypt</code>. Express API requests verified using custom <code>authMiddleware</code> JWT signature validation checks.</p>
+          </div>
+          <div class="grid-box">
+            <h4>📝 Winston Logger Integration</h4>
+            <p>Console statements replaced with structured winston logging, mapping distinct log files (<code>error.log</code>, <code>combined.log</code>) to audit production events.</p>
+          </div>
+          <div class="grid-box">
+            <h4>🌐 CORS Origin Validation</h4>
+            <p>Configured CORS allowed origins lists dynamically matching production URLs to prevent unauthorized domain API spoofing.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 8: Live Deployment Status -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2 class="slide-title"><span class="number">07.</span> Deployment & URLs</h2>
+        <span class="slide-logo">EMS Portal</span>
+      </div>
+      <div class="slide-body">
+        <p class="lead">All services are live on cloud platforms:</p>
+        <div class="slide-grid">
+          <div class="grid-box">
+            <h4>🚀 Frontend Client</h4>
+            <p>Hosted on **Vercel** with SPA rewrites mapping configurations in <code>vercel.json</code>.</p>
+            <p>URL: <a href="https://employee-management-system.vercel.app" target="_blank" style="color:var(--primary-color);">employee-management-system.vercel.app</a></p>
+          </div>
+          <div class="grid-box">
+            <h4>⚙️ API Gateway Server</h4>
+            <p>Hosted on **Render Web Services** running server.js process.</p>
+            <p>URL: <a href="https://employee-management-backend.onrender.com" target="_blank" style="color:var(--primary-color);">employee-management-backend.onrender.com</a></p>
+          </div>
+          <div class="grid-box">
+            <h4>💾 Cloud Database</h4>
+            <p>Hosted on **Neon Postgres**, connected using SSL encryption variables.</p>
+            <p>Health API Check: <code>/api/health</code> status <strong>"UP"</strong> verified.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 9: Learnings & Takeaways -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2 class="slide-title"><span class="number">08.</span> Key Internship Learnings</h2>
+        <span class="slide-logo">EMS Portal</span>
+      </div>
+      <div class="slide-body">
+        <div class="slide-grid">
+          <div class="grid-box">
+            <h4>Full-Stack Mastery</h4>
+            <p>Acquired practical mastery connecting React frontends to Express REST API endpoints with robust error routing.</p>
+          </div>
+          <div class="grid-box">
+            <h4>Database Integrity</h4>
+            <p>Learned how to map PostgreSQL schemas, write composite unique constraints, and create B-Tree indexes for scaling search queries.</p>
+          </div>
+          <div class="grid-box">
+            <h4>DevOps & Logging</h4>
+            <p>Understood Vercel deployment setups, Render environment configurations, Winston logger audit tracking, and CORS controls.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 10: Conclusion & QA -->
+    <div class="slide">
+      <div class="cover-layout">
+        <h2>Capstone Project Completed</h2>
+        <h1>Thank You!</h1>
+        <p style="color: var(--text-muted); font-size: 1.25rem;">Questions & Answers Session</p>
+        <div class="meta" style="margin-top: 1rem;">
+          <span>Presenter: <strong>Aarna Vyas</strong></span>
+          <span>Contact Email: <strong>aarna.vyas@example.com</strong></span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Navigation Controls -->
+  <div class="controls">
+    <button class="control-btn" id="prev-btn" disabled>&larr; Previous</button>
+    <div class="progress-container">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+    <span class="slide-counter" id="slide-counter">Slide 1 of 10</span>
+    <button class="control-btn" id="next-btn">Next &rarr;</button>
+  </div>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const progressBar = document.getElementById('progress-bar');
+    const slideCounter = document.getElementById('slide-counter');
+
+    let currentSlide = 0;
+    const totalSlides = slides.length;
+
+    function updateSlide() {
+      // Toggle active slide
+      slides.forEach((slide, idx) => {
+        if (idx === currentSlide) {
+          slide.classList.add('active');
+        } else {
+          slide.classList.remove('active');
+        }
+      });
+
+      // Update button status
+      prevBtn.disabled = currentSlide === 0;
+      nextBtn.disabled = currentSlide === totalSlides - 1;
+
+      // Update progress bar
+      const progressPercent = ((currentSlide + 1) / totalSlides) * 100;
+      progressBar.style.width = `${progressPercent}%`;
+
+      // Update text counter
+      slideCounter.textContent = `Slide ${currentSlide + 1} of ${totalSlides}`;
+    }
+
+    prevBtn.addEventListener('click', () => {
+      if (currentSlide > 0) {
+        currentSlide--;
+        updateSlide();
+      }
+    });
+
+    nextBtn.addEventListener('click', () => {
+      if (currentSlide < totalSlides - 1) {
+        currentSlide++;
+        updateSlide();
+      }
+    });
+
+    // Keyboard support
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') {
+        if (currentSlide < totalSlides - 1) {
+          currentSlide++;
+          updateSlide();
+        }
+      } else if (e.key === 'ArrowLeft' || e.key === 'Backspace') {
+        if (currentSlide > 0) {
+          currentSlide--;
+          updateSlide();
+        }
+      }
+    });
+
+    // Initialize slide deck view
+    updateSlide();
+  </script>
+</body>
+</html>

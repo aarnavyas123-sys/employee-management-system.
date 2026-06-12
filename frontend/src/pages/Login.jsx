@@ -25,8 +25,6 @@ function Login() {
     try {
       const res = await loginUser(form);
 
-      console.log("Login Response:", res.data);
-
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("role", res.data.role);
       localStorage.setItem("name", res.data.name);
@@ -36,8 +34,6 @@ function Login() {
 
       navigate("/dashboard");
     } catch (err) {
-      console.log(err);
-
       toast.error(err.response?.data?.message || "Login Failed");
     }
   };

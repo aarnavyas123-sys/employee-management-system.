@@ -1,8 +1,9 @@
 const pool = require("../config/db");
+const logger = require("../config/logger");
 
 const logAction = async (userId, action, details) => {
   try {
-    console.log("AUDIT LOG:", userId, action, details);
+    logger.info(`AUDIT LOG: user_id=${userId}, action=${action}, details=${details}`);
 
     await pool.query(
       `
@@ -12,9 +13,9 @@ const logAction = async (userId, action, details) => {
       [userId, action, details],
     );
 
-    console.log("AUDIT INSERTED");
+    logger.info("AUDIT INSERTED");
   } catch (error) {
-    console.error("Audit Log Error:", error.message);
+    logger.error(`Audit Log Error: ${error.message}`);
   }
 };
 

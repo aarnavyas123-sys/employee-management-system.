@@ -22,7 +22,7 @@ function Assets() {
       const res = await API.get("/assets");
       setAssets(res.data);
     } catch (error) {
-      console.log(error);
+      // Failed to load assets
     }
   };
 
@@ -50,7 +50,6 @@ function Assets() {
 
       alert("Asset Added Successfully");
     } catch (error) {
-      console.log(error);
       alert("Failed to add asset");
     }
   };

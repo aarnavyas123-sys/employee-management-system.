@@ -18,7 +18,6 @@ function Skills() {
       const res = await API.get("/skills");
       setSkills(res.data);
     } catch (error) {
-      console.log(error);
       toast.error("Failed to Fetch Skills");
     }
   };
@@ -41,7 +40,6 @@ function Skills() {
       setSkillName("");
       fetchSkills();
     } catch (error) {
-      console.log(error);
       toast.error("Failed to Add Skill");
     }
   };
@@ -56,7 +54,6 @@ function Skills() {
 
       fetchSkills();
     } catch (error) {
-      console.log(error);
       toast.error("Cannot delete skill. It may be assigned to employees.");
     }
   };

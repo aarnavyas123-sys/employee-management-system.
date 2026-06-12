@@ -153,3 +153,12 @@ Create a PostgreSQL database named `ems_db` and ensure your database service is 
 
 - **API Endpoints Reference**: Read the detailed API routes and request/response payloads in [api-documentation.md](file:///c:/Users/lenovo/Employee-Management-System/docs/api-documentation.md).
 - **Database Index Optimization**: Read details of database optimization strategies in [database-optimization-report.md](file:///c:/Users/lenovo/Employee-Management-System/docs/database-optimization-report.md).
+
+---
+
+## 👥 Developer & Deployment Details
+
+- **Developer Name**: Aarna Vyas
+- **Live Frontend Application (Vercel)**: [https://employee-management-system.vercel.app](https://employee-management-system.vercel.app)
+- **Live Backend API Gateway (Render)**: [https://employee-management-backend.onrender.com](https://employee-management-backend.onrender.com)
+- **Cloud Database Provider**: Neon Cloud PostgreSQL (PostgreSQL 16 Engine)

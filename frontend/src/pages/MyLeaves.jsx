@@ -20,7 +20,7 @@ function MyLeaves() {
 
       setLeaves(myLeaves);
     } catch (error) {
-      console.log(error);
+      // Failed to load leaves silently or handle
     }
   };
 
