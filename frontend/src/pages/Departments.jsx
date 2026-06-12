@@ -85,8 +85,7 @@ function Departments() {
           </div>
         </div>
 
-        {/* Add Department Section - Only rendered if user role is HR */}
-        {role === "HR" && (
+        {(role === "HR" || role === "Admin") && (
           <div className="card p-4 shadow-sm mb-4">
             <h4 className="mb-3">Add New Department</h4>
             <form onSubmit={handleAddDepartment}>
@@ -146,7 +145,7 @@ function Departments() {
                         </span>
                       </td>
                       <td>
-                        {role === "HR" ? (
+                        {role === "HR" || role === "Admin" ? (
                           <button
                             className="btn btn-danger btn-sm"
                             onClick={() => handleDelete(dept.id)}

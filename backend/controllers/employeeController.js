@@ -2,27 +2,44 @@ const pool = require("../config/db");
 const cache = require("../config/cache");
 const logAction = require("../utils/auditLogger");
 const logger = require("../config/logger");
-// Create Employee
 const createEmployee = async (req, res) => {
   try {
     const { name, department_id, phone, address, designation, salary } =
       req.body;
 
+    // Search for a matching user account by name to resolve user_id relationship link
+    const userResult = await pool.query("SELECT id FROM users WHERE name = $1 LIMIT 1", [name]);
+    const userId = userResult.rows[0]?.id || null;
+
     const result = await pool.query(
       `INSERT INTO employee_profiles
-       (name, department_id, phone, address, designation, salary)
-       VALUES($1,$2,$3,$4,$5,$6)
+       (user_id, name, department_id, phone, address, designation, salary)
+       VALUES($1,$2,$3,$4,$5,$6,$7)
        RETURNING *`,
-      [name, department_id, phone, address, designation, salary],
+      [userId, name, department_id, phone, address, designation, salary],
     );
+
+    const newEmployee = result.rows[0];
+
+    // Auto-initialize leave balance allocations for this employee profile
+    const leaveTypes = await pool.query("SELECT id, total_days FROM leave_types");
+    for (const lt of leaveTypes.rows) {
+      await pool.query(
+        `INSERT INTO leave_balance (employee_id, leave_type_id, remaining_days)
+         VALUES ($1, $2, $3)
+         ON CONFLICT DO NOTHING`,
+        [newEmployee.id, lt.id, lt.total_days]
+      );
+    }
+
     await logAction(
       req.user?.id || 1,
       "Employee Created",
-      `Employee ${name} was created`,
+      `Employee ${name} was created and leave balances initialized`,
     );
     cache.flushAll();
 
-    res.status(201).json(result.rows[0]);
+    res.status(201).json(newEmployee);
   } catch (error) {
     logger.error(`Create Employee Error: ${error.message}`);
 

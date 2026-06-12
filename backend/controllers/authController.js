@@ -33,6 +33,27 @@ const signup = async (req, res) => {
 
     const newUser = result.rows[0];
 
+    // Auto-create default employee profile and initialize leave balances
+    const profileResult = await pool.query(
+      `INSERT INTO employee_profiles (user_id, name)
+       VALUES ($1, $2)
+       ON CONFLICT (user_id) DO NOTHING
+       RETURNING *`,
+      [newUser.id, newUser.name]
+    );
+    if (profileResult.rows.length > 0) {
+      const newEmployee = profileResult.rows[0];
+      const leaveTypes = await pool.query("SELECT id, total_days FROM leave_types");
+      for (const lt of leaveTypes.rows) {
+        await pool.query(
+          `INSERT INTO leave_balance (employee_id, leave_type_id, remaining_days)
+           VALUES ($1, $2, $3)
+           ON CONFLICT DO NOTHING`,
+          [newEmployee.id, lt.id, lt.total_days]
+        );
+      }
+    }
+
     // Audit Log Action Trigger
     await logAction(
       newUser.id,
@@ -145,6 +166,31 @@ const createUser = async (req, res) => {
       [name, email, hashedPassword, role, userStatus],
     );
 
+    const newUser = result.rows[0];
+
+    // Auto-create default employee profile and initialize leave balances if user is not Admin
+    if (role !== "Admin") {
+      const profileResult = await pool.query(
+        `INSERT INTO employee_profiles (user_id, name)
+         VALUES ($1, $2)
+         ON CONFLICT (user_id) DO NOTHING
+         RETURNING *`,
+        [newUser.id, newUser.name]
+      );
+      if (profileResult.rows.length > 0) {
+        const newEmployee = profileResult.rows[0];
+        const leaveTypes = await pool.query("SELECT id, total_days FROM leave_types");
+        for (const lt of leaveTypes.rows) {
+          await pool.query(
+            `INSERT INTO leave_balance (employee_id, leave_type_id, remaining_days)
+             VALUES ($1, $2, $3)
+             ON CONFLICT DO NOTHING`,
+            [newEmployee.id, lt.id, lt.total_days]
+          );
+        }
+      }
+    }
+
     await logAction(
       req.user.id,
       "User Created",
@@ -153,7 +199,7 @@ const createUser = async (req, res) => {
 
     res.status(201).json({
       message: "User Created Successfully",
-      user: result.rows[0],
+      user: newUser,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
