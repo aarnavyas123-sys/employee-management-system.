@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
-import signupImage from "../assets/signup.png";
+import signupImage from "../assets/Signup.png";
 import { signupUser } from "../services/api";
 
 function Signup() {
