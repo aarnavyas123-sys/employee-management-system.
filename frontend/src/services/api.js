@@ -1,8 +1,8 @@
 import axios from "axios";
 
 const API = axios.create({
-  // Base URL ko global rakha taaki baaki modules (assets, notifications) crash na hon
-  baseURL: "http://localhost:5000/api/v1",
+  // Base URL is configured dynamically to support Vercel/Render deployment base API routing
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api/v1",
 });
 
 // Automatically inject JWT token in headers before every request

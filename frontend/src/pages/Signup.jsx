@@ -1,8 +1,8 @@
 import { useState } from "react";
-import axios from "axios";
 import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
 import signupImage from "../assets/signup.png";
+import { signupUser } from "../services/api";
 
 function Signup() {
   const navigate = useNavigate();
@@ -30,7 +30,7 @@ function Signup() {
     }
 
     try {
-      await axios.post("http://localhost:5000/api/auth/signup", {
+      await signupUser({
         name: form.name,
         email: form.email,
         password: form.password,

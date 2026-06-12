@@ -1,8 +1,8 @@
 import { useState } from "react";
-import axios from "axios";
 import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
 import loginImage from "../assets/Login.png";
+import { loginUser } from "../services/api";
 
 function Login() {
   const navigate = useNavigate();
@@ -23,10 +23,7 @@ function Login() {
     e.preventDefault();
 
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/v1/auth/login",
-        form,
-      );
+      const res = await loginUser(form);
 
       console.log("Login Response:", res.data);
 
