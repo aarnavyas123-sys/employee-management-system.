@@ -61,7 +61,7 @@ function Employees() {
               </p>
             </div>
 
-            {role === "HR" && (
+            {(role === "HR" || role === "Admin") && (
               <Link to="/add-employee" className="btn btn-primary">
                 + Add Employee
               </Link>
@@ -162,7 +162,7 @@ function Employees() {
                           👁 View
                         </Link>
 
-                        {role === "HR" && (
+                        {(role === "HR" || role === "Admin") && (
                           <>
                             <Link
                               to={`/edit-employee/${emp.id}`}

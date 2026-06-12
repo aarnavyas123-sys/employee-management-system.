@@ -35,7 +35,7 @@ const startLeaveReminderJob = () => {
 
         // Audit Log
         await logAction(
-          1,
+          null,
           "Cron Job Executed",
           `${pendingCount} pending leave requests checked`,
         );
